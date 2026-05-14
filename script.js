@@ -1,0 +1,1 @@
+console.log("Rish Verse Loaded Successfully");
