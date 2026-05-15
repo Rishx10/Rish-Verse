@@ -108,7 +108,23 @@ nav ul li a:hover{
     display:flex;
     gap:20px;
 }
+.brand{
 
+    display:flex;
+    align-items:center;
+
+    gap:15px;
+
+}
+
+.nav-logo{
+
+    width:55px;
+    height:55px;
+
+    object-fit:contain;
+
+}
 button{
     padding:15px 35px;
 
