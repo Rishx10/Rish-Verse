@@ -466,3 +466,19 @@ footer{
     }
 
 }
+.brand-link{
+    text-decoration:none;
+    color:white;
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:15px;
+}
+
+.nav-logo{
+    width:55px;
+    height:55px;
+    object-fit:contain;
+}
