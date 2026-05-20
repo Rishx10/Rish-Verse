@@ -1,134 +1,350 @@
+# index.html
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Rish Verse</title>
 
-    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="icon"
+          type="image/png"
+          href="images/favicon.png">
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet"
+          href="style.css">
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+          rel="stylesheet">
 
 </head>
 
 <body>
+    <div class="progress-bar"></div>
 
-<header>
+    <!-- LOADING SCREEN -->
 
-    <nav>
-
-       <div class="logo-section">
-
-    <div class="brand">
+    <div class="loader">
 
         <img src="images/logo.png"
-             class="nav-logo">
+             alt="Logo"
+             class="loader-logo">
 
         <h1>Rish Verse</h1>
 
     </div>
 
-    <p class="tagline">
-        Bring Creativity to life
-    </p>
+    <div class="features-grid">
 
-</div>
-        <ul>
+    <a href="gallery.html" class="feature-card">
 
-            <li><a href="index.html">Home</a></li>
-
-            <li><a href="gallery.html">Gallery</a></li>
-
-            <li><a href="poems.html">Blogs</a></li>
-
-        </ul>
-
-    </nav>
-
-</header>
-
-<section class="hero">
-
-    <div class="hero-content">
-
-        <h2>
-            Through lenses,<br>
-            silence learns to breathe.
-        </h2>
+        <h3>Photography</h3>
 
         <p>
-            Wildlife photography, landscapes, visual storytelling,
-            and football edits stitched together beneath one universe.
+            Wildlife, landscapes,
+            moody skies and cinematic frames.
         </p>
 
-        <div class="buttons">
+    </a>
 
-            <a href="gallery.html">
-                <button>
+
+    <a href="poems.html" class="feature-card">
+
+        <h3>Poetry</h3>
+
+        <p>
+            Emotional minimalism,
+            surrealism and midnight thoughts.
+        </p>
+
+    </a>
+
+
+    <a href="visuals.html" class="feature-card">
+
+        <h3>Visual Edits</h3>
+
+        <p>
+            Football edits,
+            Messi tributes,
+            cinematic reels and motion stories.
+        </p>
+
+    </a>
+
+</div>
+
+
+    <!-- HERO SECTION -->
+
+    <section class="hero">
+
+        <!-- BACKGROUND IMAGES -->
+
+        <div class="hero-slides">
+
+            <div class="slide active"
+                 style="background-image: url('images/i1.jpg');">
+            </div>
+
+            <div class="slide"
+                 style="background-image: url('images/i2.jpg');">
+            </div>
+
+            <div class="slide"
+                 style="background-image: url('images/i3.jpg');">
+            </div>
+
+            <div class="slide"
+                 style="background-image: url('images/i4.jpg');">
+            </div>
+
+            <div class="slide"
+                 style="background-image: url('images/i5.jpg');">
+            </div>
+
+        </div>
+
+
+        <!-- DARK OVERLAY -->
+
+        <div class="overlay"></div>
+
+
+        <!-- NAVBAR -->
+
+        <header>
+
+            <nav>
+
+                <div class="logo-section">
+
+                    <a href="index.html"
+                       class="brand-link">
+
+                        <div class="brand">
+
+                            <img src="images/logo.png"
+                                 class="nav-logo">
+
+                            <div>
+
+                                <h1>Rish Verse</h1>
+
+                                <p class="tagline">
+                                    Bring Creativity to life
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </a>
+
+                </div>
+
+
+                <ul class="nav-links">
+
+                    <li><a href="index.html">Home</a></li>
+
+                    <li><a href="gallery.html">Gallery</a></li>
+
+                    <li><a href="poems.html">Poems</a></li>
+
+                    <li><a href="visuals.html">Visual Edits</a></li>
+
+                </ul>
+
+            </nav>
+
+        </header>
+
+
+        <!-- HERO CONTENT -->
+
+        <div class="hero-content">
+
+            <p class="hero-small-text">
+                Wildlife • Poetry • Visual Storytelling
+            </p>
+
+            <h2>
+                Through lenses,<br>
+                silence learns to breathe.
+            </h2>
+
+            <p class="hero-description">
+                A cinematic archive of wildlife photography,
+                landscapes, poetry, and football edits stitched
+                together beneath one universe.
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="gallery.html"
+                   class="primary-btn">
                     Explore Gallery
-                </button>
+                </a>
+
+                <a href="poems.html"
+                   class="secondary-btn">
+                    Read Poems
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- SCROLL INDICATOR -->
+
+        <div class="scroll-indicator">
+
+            <span></span>
+
+        </div>
+
+    </section>
+
+
+    <!-- ABOUT SECTION -->
+
+    <section class="about-section">
+
+        <div class="about-container">
+
+            <div class="about-left">
+
+                <h2>
+                    Welcome to Rish Verse
+                </h2>
+
+                <p>
+                    This is more than a portfolio.
+                    It is a space where landscapes,
+                    wildlife, memories, poems,
+                    and visual edits exist beneath
+                    the same sky.
+                </p>
+
+            </div>
+
+            <div class="about-right">
+
+                <div class="glass-card">
+
+                    <h3>
+                        Photography
+                    </h3>
+
+                    <p>
+                        Wildlife, landscapes,
+                        moody skies and cinematic frames.
+                    </p>
+
+                </div>
+
+                <div class="glass-card">
+
+                    <h3>
+                        Poetry
+                    </h3>
+
+                    <p>
+                        Emotional minimalism,
+                        surrealism and midnight thoughts.
+                    </p>
+
+                </div>
+
+                <div class="glass-card">
+
+                    <h3>
+                        Visual Edits
+                    </h3>
+
+                    <p>
+                        Football edits, Messi tributes,
+                        cinematic reels and motion stories.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- SOCIAL SECTION -->
+
+    <section class="socials-section">
+
+        <h2>
+            Find Me Elsewhere
+        </h2>
+
+        <div class="social-grid">
+
+            <a href="https://www.youtube.com/@rishx10"
+               target="_blank"
+               class="social-card">
+
+                <h3>YouTube</h3>
+
+                <p>
+                    Football edits, Messi tributes,
+                    cinematic shorts and visual storytelling.
+                </p>
+
             </a>
 
-            <a href="poems.html">
-                <button class="secondary-btn">
-                    Read Poems
-                </button>
+
+            <a href="https://www.instagram.com/_rish__8/"
+               target="_blank"
+               class="social-card">
+
+                <h3>Instagram</h3>
+
+                <p>
+                    Wildlife frames, landscapes,
+                    nature photography and visual atmosphere.
+                </p>
+
             </a>
 
         </div>
 
-    </div>
+    </section>
 
-</section>
 
-<section class="socials">
+    <!-- FOOTER -->
 
-    <h2>Find Me Elsewhere</h2>
+    <footer>
 
-    <div class="social-container">
+        <p>
+            © 2026 Rish Verse • Crafted by Rish
+        </p>
 
-        <a href="https://www.youtube.com/@rishx10"
-           target="_blank"
-           class="card">
+    </footer>
 
-            <h3>YouTube</h3>
 
-            <p>
-                Football edits, Messi tributes,
-                cinematic shorts and visual storytelling.
-            </p>
-
-        </a>
-
-        <a href="https://www.instagram.com/_rish__8/"
-           target="_blank"
-           class="card">
-
-            <h3>Instagram</h3>
-
-            <p>
-                Wildlife frames, landscapes,
-                nature photography and creative visuals.
-            </p>
-
-        </a>
-
-    </div>
-
-</section>
-
-<footer>
-
-    <p>
-        © 2026 Rish Verse • Crafted by Rish
-    </p>
-
-</footer>
-
-<script src="script.js"></script>
+    <script src="script.js"></script>
 
 </body>
 

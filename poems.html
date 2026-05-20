@@ -1,62 +1,168 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Poems • Rish Verse</title>
 
-    <link rel="icon" type="image/png" href="images/logo.png">
+    <link rel="icon"
+          type="image/png"
+          href="images/favicon.png">
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet"
+          href="style.css">
 
 </head>
+
 <body>
+    <div class="progress-bar"></div>
 
-<header>
+    <!-- NAVBAR -->
 
-    <nav>
+    <header>
 
-        <div class="logo-section">
-            <h1>Rish Verse</h1>
-            <p class="tagline">Bring Creativity to life</p>
+        <nav>
+
+            <div class="logo-section">
+
+                <a href="index.html"
+                   class="brand-link">
+
+                    <div class="brand">
+
+                        <img src="images/logo.png"
+                             class="nav-logo">
+
+                        <div>
+
+                            <h1>Rish Verse</h1>
+
+                            <p class="tagline">
+                                Bring Creativity to life
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </a>
+
+            </div>
+
+            <ul class="nav-links">
+
+                <li><a href="index.html">Home</a></li>
+
+                <li><a href="gallery.html">Gallery</a></li>
+
+                <li><a href="poems.html">Poems</a></li>
+
+                <li><a href="visuals.html">Visual Edits</a></li>
+
+            </ul>
+
+        </nav>
+
+    </header>
+
+
+
+    <!-- HERO -->
+
+    <section class="poems-hero">
+
+        <div class="gallery-overlay"></div>
+
+        <div class="gallery-hero-content">
+
+            <p>
+                Midnight Thoughts • Silence • Memory
+            </p>
+
+            <h2>
+                Words that survived<br>
+                the night.
+            </h2>
+
         </div>
 
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="gallery.html">Gallery</a></li>
-            <li><a href="poems.html">Blogs</a></li>
-        </ul>
+    </section>
 
-    </nav>
 
-</header>
 
-<section class="poems-page">
+    <!-- POEMS SECTION -->
 
-    <h1>Poems by Rish</h1>
+    <section class="poems-section">
 
-    <div class="poem-list">
+        <div class="poems-grid">
 
-        <a href="p1.html" class="poem-card">
-            <h2>Unsaid</h2>
-            <p>Tap to read</p>
-        </a>
+            <a href="p1.html"
+               class="poem-card">
 
-        <a href="p2.html" class="poem-card">
-            <h2>Where the Dreamlight Burns</h2>
-            <p>Tap to read</p>
-        </a>
+                <span>
+                    Silence / Emotion
+                </span>
 
-         <a href="p3.html" class="poem-card">
-            <h2>The Rope Still Hangs</h2>
-            <p>Tap to read</p>
-        </a>
+                <h2>
+                    Unsaid
+                </h2>
 
-    </div>
+                <p>
+                    Silence remembers what voices forget.
+                </p>
 
-</section>
+            </a>
+
+
+
+            <a href="p2.html"
+               class="poem-card">
+
+                <span>
+                    Dreams / Surrealism
+                </span>
+
+                <h2>
+                    Where the Dreamlight Burns
+                </h2>
+
+                <p>
+                    Some dreams survive even daylight.
+                </p>
+
+            </a>
+
+
+
+            <a href="p3.html"
+               class="poem-card">
+
+                <span>
+                    Grief / Memory
+                </span>
+
+                <h2>
+                    The Rope Still Hangs
+                </h2>
+
+                <p>
+                    Memory tightens quieter than rope.
+                </p>
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <script src="script.js"></script>
 
 </body>
+
 </html>
