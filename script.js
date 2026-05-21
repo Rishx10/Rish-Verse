@@ -213,3 +213,49 @@ window.addEventListener("scroll", () => {
     scrollPercent + "%";
 
 });
+// =========================
+// PAGE TRANSITIONS
+// =========================
+
+const transition =
+document.querySelector(".page-transition");
+
+const internalLinks =
+document.querySelectorAll(
+    'a[href$=".html"]'
+);
+
+internalLinks.forEach(link => {
+
+    link.addEventListener("click", function(e){
+
+        const target =
+        this.getAttribute("href");
+
+        if(target){
+
+            e.preventDefault();
+
+            transition.classList.add("active");
+
+            setTimeout(() => {
+
+                window.location.href =
+                target;
+
+            }, 500);
+
+        }
+
+    });
+
+});
+
+
+// FADE IN WHEN PAGE LOADS
+
+window.addEventListener("load", () => {
+
+    transition.classList.remove("active");
+
+});

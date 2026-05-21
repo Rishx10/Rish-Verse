@@ -31,6 +31,7 @@
 
 <body>
     <div class="progress-bar"></div>
+    <div class="page-transition"></div>
 
     <!-- LOADING SCREEN -->
 
@@ -293,6 +294,65 @@
 
     </section>
 
+    <!-- REVIEW SECTION -->
+
+<section class="review-section">
+
+    <div class="review-container">
+
+        <h2>
+            Leave Your Echo
+        </h2>
+
+        <p class="review-subtext">
+            Tell me how this universe felt to you.
+        </p>
+
+
+        <!-- STARS -->
+
+        <div class="star-rating">
+
+            <span data-rating="1">★</span>
+            <span data-rating="2">★</span>
+            <span data-rating="3">★</span>
+            <span data-rating="4">★</span>
+            <span data-rating="5">★</span>
+
+        </div>
+
+
+        <!-- REVIEW FORM -->
+
+        <form id="reviewForm">
+
+            <input type="text"
+                   id="reviewName"
+                   placeholder="Your name (optional)">
+
+            <textarea id="reviewText"
+                      placeholder="Share what you felt..."
+                      required></textarea>
+
+            <button type="submit">
+
+                Submit Review
+
+            </button>
+
+        </form>
+
+
+        <!-- REVIEWS DISPLAY -->
+
+        <div id="reviewsContainer">
+
+        </div>
+
+    </div>
+
+</section>
+
 
     <!-- FOOTER -->
 
@@ -305,7 +365,8 @@
     </footer>
 
 
-    <script src="script.js"></script>
+    <script type="module"
+        src="script.js"></script>
 
 </body>
 
