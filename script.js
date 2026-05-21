@@ -4,13 +4,18 @@
 
 window.addEventListener("load", () => {
 
-    const loader = document.querySelector(".loader");
+    const loader =
+    document.querySelector(".loader");
 
-    setTimeout(() => {
+    if(loader){
 
-        loader.style.display = "none";
+        setTimeout(() => {
 
-    }, 2800);
+            loader.style.display = "none";
+
+        }, 2800);
+
+    }
 
 });
 
@@ -19,13 +24,17 @@ window.addEventListener("load", () => {
 // HERO IMAGE ROTATION
 // =========================
 
-const slides = document.querySelectorAll(".slide");
+const slides =
+document.querySelectorAll(".slide");
 
 let currentSlide = 0;
 
 function changeSlide(){
 
-    slides[currentSlide].classList.remove("active");
+    if(slides.length === 0) return;
+
+    slides[currentSlide]
+    .classList.remove("active");
 
     currentSlide++;
 
@@ -35,38 +44,52 @@ function changeSlide(){
 
     }
 
-    slides[currentSlide].classList.add("active");
+    slides[currentSlide]
+    .classList.add("active");
 
 }
 
-setInterval(changeSlide, 6000);
+if(slides.length > 0){
+
+    setInterval(changeSlide, 6000);
+
+}
 
 
 // =========================
 // NAVBAR SCROLL EFFECT
 // =========================
 
-const nav = document.querySelector("nav");
+const nav =
+document.querySelector("nav");
 
 window.addEventListener("scroll", () => {
 
+    if(!nav) return;
+
     if(window.scrollY > 50){
 
-        nav.style.background = "rgba(5,5,5,0.75)";
+        nav.style.background =
+        "rgba(5,5,5,0.75)";
 
-        nav.style.backdropFilter = "blur(18px)";
+        nav.style.backdropFilter =
+        "blur(18px)";
 
-        nav.style.border = "1px solid rgba(255,255,255,0.12)";
+        nav.style.border =
+        "1px solid rgba(255,255,255,0.12)";
 
     }
 
     else{
 
-        nav.style.background = "rgba(10,10,10,0.35)";
+        nav.style.background =
+        "rgba(10,10,10,0.35)";
 
-        nav.style.backdropFilter = "blur(14px)";
+        nav.style.backdropFilter =
+        "blur(14px)";
 
-        nav.style.border = "1px solid rgba(255,255,255,0.08)";
+        nav.style.border =
+        "1px solid rgba(255,255,255,0.08)";
 
     }
 
@@ -77,13 +100,17 @@ window.addEventListener("scroll", () => {
 // FADE IN ON SCROLL
 // =========================
 
-const revealElements = document.querySelectorAll(
+const revealElements =
+document.querySelectorAll(
+
     ".glass-card, .social-card, .about-left"
+
 );
 
 function revealOnScroll(){
 
-    const triggerBottom = window.innerHeight * 0.85;
+    const triggerBottom =
+    window.innerHeight * 0.85;
 
     revealElements.forEach(element => {
 
@@ -115,7 +142,10 @@ revealElements.forEach(element => {
 
 });
 
-window.addEventListener("scroll", revealOnScroll);
+window.addEventListener(
+    "scroll",
+    revealOnScroll
+);
 
 revealOnScroll();
 
@@ -126,22 +156,30 @@ revealOnScroll();
 
 window.addEventListener("scroll", () => {
 
-    const scrollY = window.scrollY;
+    const scrollY =
+    window.scrollY;
 
     slides.forEach(slide => {
 
         slide.style.transform =
-        `scale(1.12) translateY(${scrollY * 0.08}px)`;
+
+        `scale(1.12)
+         translateY(${scrollY * 0.08}px)`;
 
     });
 
 });
+
+
 // =========================
 // GALLERY LIGHTBOX
 // =========================
 
 const galleryImages =
-document.querySelectorAll(".masonry-gallery img");
+
+document.querySelectorAll(
+    ".masonry-gallery img"
+);
 
 const lightbox =
 document.querySelector(".lightbox");
@@ -157,6 +195,9 @@ galleryImages.forEach(image => {
 
     image.addEventListener("click", () => {
 
+        if(!lightbox ||
+           !lightboxImage) return;
+
         lightbox.classList.add("active");
 
         lightboxImage.src = image.src;
@@ -168,28 +209,40 @@ galleryImages.forEach(image => {
 
 if(closeLightbox){
 
-    closeLightbox.addEventListener("click", () => {
+    closeLightbox.addEventListener(
+        "click",
+        () => {
 
-        lightbox.classList.remove("active");
+            lightbox.classList.remove(
+                "active"
+            );
 
-    });
+        }
+    );
 
 }
 
 
 if(lightbox){
 
-    lightbox.addEventListener("click", (e) => {
+    lightbox.addEventListener(
+        "click",
+        (e) => {
 
-        if(e.target === lightbox){
+            if(e.target === lightbox){
 
-            lightbox.classList.remove("active");
+                lightbox.classList.remove(
+                    "active"
+                );
+
+            }
 
         }
-
-    });
+    );
 
 }
+
+
 // =========================
 // SCROLL PROGRESS BAR
 // =========================
@@ -199,63 +252,92 @@ document.querySelector(".progress-bar");
 
 window.addEventListener("scroll", () => {
 
+    if(!progressBar) return;
+
     const scrollTop =
+
     document.documentElement.scrollTop;
 
     const scrollHeight =
+
     document.documentElement.scrollHeight -
+
     document.documentElement.clientHeight;
 
     const scrollPercent =
+
     (scrollTop / scrollHeight) * 100;
 
     progressBar.style.width =
+
     scrollPercent + "%";
 
 });
+
+
 // =========================
 // PAGE TRANSITIONS
 // =========================
 
 const transition =
-document.querySelector(".page-transition");
+document.querySelector(
+    ".page-transition"
+);
 
 const internalLinks =
+
 document.querySelectorAll(
     'a[href$=".html"]'
 );
 
 internalLinks.forEach(link => {
 
-    link.addEventListener("click", function(e){
+    link.addEventListener(
+        "click",
 
-        const target =
-        this.getAttribute("href");
+        function(e){
 
-        if(target){
+            const target =
 
-            e.preventDefault();
+            this.getAttribute("href");
 
-            transition.classList.add("active");
+            if(target &&
+               transition){
 
-            setTimeout(() => {
+                e.preventDefault();
 
-                window.location.href =
-                target;
+                transition.classList.add(
+                    "active"
+                );
 
-            }, 500);
+                setTimeout(() => {
+
+                    window.location.href =
+                    target;
+
+                }, 500);
+
+            }
 
         }
 
-    });
+    );
 
 });
 
 
-// FADE IN WHEN PAGE LOADS
+// =========================
+// PAGE LOAD TRANSITION
+// =========================
 
 window.addEventListener("load", () => {
 
-    transition.classList.remove("active");
+    if(transition){
+
+        transition.classList.remove(
+            "active"
+        );
+
+    }
 
 });
