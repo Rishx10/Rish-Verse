@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Crypt • Rish Verse</title>
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* STANDALONE LAYOUT ENVIRONMENT */
+        body {
+            background: #050505 !important;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+        }
+        .game-wrapper {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 20px 60px;
+            box-sizing: border-box;
+            position: relative;
+        }
+        .game-header-area {
+            position: relative;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .game-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3.5rem;
+            margin: 0 0 5px 0;
+            letter-spacing: 1px;
+            color: #ffffff !important;
+        }
+        .game-sub {
+            color: #7d8f7a !important;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin: 0;
+        }
+        
+        /* HELP BUTTON */
+        .help-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #7d8f7a;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+        .help-btn:hover {
+            background: rgba(125, 143, 122, 0.2);
+            border-color: #7d8f7a;
+            color: #fff;
+        }
+        
+        /* GRID LAYOUT MAP */
+        #wordle-grid {
+            display: grid !important;
+            grid-template-rows: repeat(6, 1fr) !important;
+            gap: 10px !important;
+            margin: 0 auto 25px auto !important;
+            width: max-content !important;
+        }
+        .grid-row {
+            display: grid !important;
+            grid-template-columns: repeat(5, 1fr) !important;
+            gap: 10px !important;
+            width: max-content !important;
+        }
+        .tile {
+            width: 62px;
+            height: 62px;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            background: rgba(255, 255, 255, 0.02) !important;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #ffffff !important;
+            user-select: none;
+            perspective: 1000px;
+            box-sizing: border-box;
+            transition: transform 0.1s ease, border-color 0.1s ease;
+        }
+        
+        /* FLIP EFFECTS CODE */
+        .tile.pop {
+            transform: scale(1.08);
+            border-color: rgba(255, 255, 255, 0.45) !important;
+        }
+        .tile.flip {
+            transform: rotateX(90deg);
+            transition: transform 0.25s ease-in;
+        }
+        .tile.reveal {
+            transform: rotateX(0deg);
+            transition: transform 0.25s ease-out;
+        }
+
+        /* LIVE VISUAL CLUE COLOR MAPS FOR FLIPPED TILES */
+        .tile[style*="background: rgb(125, 143, 122)"],
+        .tile[style*="background: #7d8f7a"] {
+            background-color: #7d8f7a !important;
+            border-color: #7d8f7a !important;
+            color: #ffffff !important;
+        }
+        .tile[style*="background: rgb(173, 147, 99)"],
+        .tile[style*="background: #ad9363"] {
+            background-color: #ad9363 !important;
+            border-color: #ad9363 !important;
+            color: #ffffff !important;
+        }
+        .tile[style*="background: rgb(37, 37, 37)"],
+        .tile[style*="background: #252525"] {
+            background-color: #252525 !important;
+            border-color: #252525 !important;
+            color: rgba(255, 255, 255, 0.4) !important;
+        }
+
+        /* DYNAMIC HINT BOX WRAPPER */
+        #hint-display-box {
+            width: 100%;
+            max-width: 440px;
+            min-height: 54px;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px dashed rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            margin: 0 auto 25px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            box-sizing: border-box;
+            transition: all 0.4s ease;
+        }
+        #hint-display-box.active {
+            background: rgba(173, 147, 99, 0.03);
+            border: 1px solid rgba(173, 147, 99, 0.15);
+        }
+        #hint-text {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.4);
+            font-style: italic;
+            text-align: center;
+            line-height: 1.5;
+            margin: 0;
+            transition: opacity 0.2s ease;
+        }
+        #hint-text.reveal-mode {
+            color: #ad9363;
+            font-weight: 400;
+        }
+
+        /* INTERACTIVE SYSTEM HINT CONTROLLER BUTTON */
+        .hint-trigger-btn {
+            background: rgba(173, 147, 99, 0.08);
+            border: 1px solid rgba(173, 147, 99, 0.2);
+            color: #ad9363;
+            padding: 10px 24px;
+            font-size: 0.8rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-weight: 600;
+            border-radius: 20px;
+            cursor: pointer;
+            margin: 0 auto 25px auto;
+            display: block;
+            transition: all 0.3s ease;
+        }
+        .hint-trigger-btn:hover:not(:disabled) {
+            background: rgba(173, 147, 99, 0.15);
+            border-color: #ad9363;
+            transform: translateY(-1px);
+        }
+        .hint-trigger-btn:disabled {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.2);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* KEYBOARD WRAPPER CONFIG */
+        #keyboard-container {
+            width: 100% !important;
+            max-width: 520px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 8px !important;
+            margin: 0 auto !important;
+            padding: 0 10px !important;
+            box-sizing: border-box !important;
+        }
+        .keyboard-row {
+            display: flex !important;
+            justify-content: center !important;
+            gap: 6px !important;
+            width: 100% !important;
+        }
+        .key {
+            background: rgba(255, 255, 255, 0.06) !important;
+            border: 1px solid rgba(255, 255, 255, 0.03) !important;
+            color: rgba(255, 255, 255, 0.9) !important;
+            padding: 16px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            flex: 1;
+            text-transform: uppercase;
+            transition: background 0.2s, color 0.2s;
+        }
+        .key.large {
+            flex: 1.8;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+        }
+        .key:hover {
+            background: rgba(255, 255, 255, 0.15) !important;
+            color: #ffffff !important;
+        }
+
+        /* RULES MODAL POPUP DIALOG */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-card {
+            background: #0f0f0f;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 35px;
+            width: 90%;
+            max-width: 460px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            transform: scale(0.9);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 10px;
+        }
+        .modal-header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.2rem;
+            margin: 0;
+            color: #fff;
+        }
+        .close-modal {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.4);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .close-modal:hover { color: #fff; }
+        
+        .rules-content p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.7);
+            margin: 0 0 20px 0;
+        }
+        .example-container {
+            margin-top: 25px;
+        }
+        .example-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #7d8f7a;
+            margin-bottom: 12px;
+        }
+        .ex-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+        .ex-tile {
+            width: 36px;
+            height: 36px;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        .ex-txt {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
+            margin-left: 5px;
+        }
+
+        /* PREMIUM FLOATING TOASTS */
+        #toast-container {
+            position: fixed;
+            top: 12%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+        .toast {
+            background: rgba(20, 20, 20, 0.95) !important;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff !important;
+            padding: 14px 26px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.7);
+            opacity: 0;
+            transform: translateY(-20px) scale(0.9);
+            animation: toastFadeIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            text-align: center;
+        }
+        @keyframes toastFadeIn {
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @media (max-width: 480px) {
+            .tile { width: 46px; height: 46px; font-size: 1.2rem; border-radius: 6px; }
+            .key { padding: 14px 2px; font-size: 0.75rem; }
+            .key.large { font-size: 0.6rem; }
+            .game-title { font-size: 2.5rem; }
+            .modal-card { padding: 20px; }
+            #hint-display-box { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="toast-container"></div>
+
+    <div class="modal-overlay" id="rules-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>Crypt Rules</h2>
+                <button class="close-modal" id="close-rules">&times;</button>
+            </div>
+            <div class="rules-content">
+                <p>Decipher the hidden 5-letter poetry fragment in 6 attempts. Each guess must be a valid 5-letter word.</p>
+                <p>After each submission, the tiles will shift colors to reveal how close your alignment is to the verse:</p>
+                
+                <div class="example-container">
+                    <div class="example-title">Visual Clues</div>
+                    
+                    <div class="ex-row">
+                        <div class="ex-tile" style="background:#7d8f7a; border-color:#7d8f7a;">W</div>
+                        <span class="ex-txt"><strong>Sage Green:</strong> Perfect. Letter is correct and in the right spot.</span>
+                    </div>
+                    
+                    <div class="ex-row">
+                        <div class="ex-tile" style="background:#ad9363; border-color:#ad9363;">O</div>
+                        <span class="ex-txt"><strong>Muted Gold:</strong> Misplaced. In the word, but wrong spot.</span>
+                    </div>
+                    
+                    <div class="ex-row">
+                        <div class="ex-tile" style="background:#252525; border-color:#252525;">R</div>
+                        <span class="ex-txt"><strong>Charcoal:</strong> Missing. Not in the secret word at all.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <header>
+        <nav>
+            <div class="logo-section">
+                <a href="index.html" class="brand-link">
+                    <div class="brand">
+                        <img src="images/logo.png" class="nav-logo" alt="Logo">
+                        <div>
+                            <h1>Rish Verse</h1>
+                            <p class="tagline">Bring Creativity to life</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="gallery.html">Gallery</a></li>
+                <li><a href="poems.html">Poems</a></li>
+                <li><a href="thecrypt.html">The Crypt</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="game-wrapper">
+        <div class="game-header-area">
+            <h1 class="game-title">The Crypt</h1>
+            <p class="game-sub">Decipher the fading poetry fragments</p>
+            <button class="help-btn" id="open-rules" title="How to Play">?</button>
+        </div>
+
+        <div id="wordle-grid"></div>
+
+        <div id="hint-display-box">
+            <p id="hint-text">The crypt box hums silently... seek clues below if you lose your way.</p>
+        </div>
+        <button class="hint-trigger-btn" id="hint-btn">Unlock Hint (3 Left)</button>
+
+        <div id="keyboard-container"></div>
+    </main>
+
+    <footer>
+        <p>© 2026 Rish Verse • Crafted by Rish</p>
+    </footer>
+
+    <script src="words.js"></script>
+    <script src="thecrypt.js"></script>
+</body>
+</html>
