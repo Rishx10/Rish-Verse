@@ -1500,3 +1500,10 @@ footer{
 
     color:#d7d7d7;
 }
+.star-rating span.active{
+
+    color:#d6b36a;
+
+    transform:scale(1.15);
+
+}

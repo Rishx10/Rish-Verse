@@ -1,4 +1,4 @@
-// FIREBASE IMPORTS
+// FIREBASE SDKS
 
 import { initializeApp }
 
@@ -6,13 +6,7 @@ from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
 import {
 
-    getFirestore,
-    collection,
-    addDoc,
-    getDocs,
-    query,
-    orderBy,
-    serverTimestamp
+    getFirestore
 
 }
 
@@ -47,17 +41,6 @@ const db =
 getFirestore(app);
 
 
-// EXPORT DATABASE
+// EXPORT
 
-export {
-
-    db,
-
-    collection,
-    addDoc,
-    getDocs,
-    query,
-    orderBy,
-    serverTimestamp
-
-};
+export { db };
