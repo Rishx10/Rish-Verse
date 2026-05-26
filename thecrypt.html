@@ -26,15 +26,16 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             padding: 120px 20px 60px;
             box-sizing: border-box;
             position: relative;
         }
         .game-header-area {
             position: relative;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
             text-align: center;
+            width: 100%;
         }
         .game-title {
             font-family: 'Cormorant Garamond', serif;
@@ -70,14 +71,43 @@
             border-color: #7d8f7a;
             color: #fff;
         }
+
+        /* NEW: DESKTOP TWO-COLUMN SPLIT CONTAINER SYSTEM */
+        .game-container-split {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 50px;
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+        /* LEFT HALF: THE GRID */
+        .split-left-grid {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end; /* Keeps it balanced looking toward the center */
+        }
         
-        /* GRID LAYOUT MAP */
+        /* RIGHT HALF: HINTS & CONTROLS DASHBOARD */
+        .split-right-dashboard {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Clean left alignment for dashboard view */
+            justify-content: flex-start;
+        }
+        
+        /* GRID LAYOUT CONFIG */
         #wordle-grid {
             display: grid !important;
             grid-template-rows: repeat(6, 1fr) !important;
             gap: 10px !important;
-            margin: 0 auto 25px auto !important;
             width: max-content !important;
+            cursor: pointer;
         }
         .grid-row {
             display: grid !important;
@@ -86,8 +116,8 @@
             width: max-content !important;
         }
         .tile {
-            width: 62px;
-            height: 62px;
+            width: 60px;
+            height: 60px;
             border: 1px solid rgba(255, 255, 255, 0.15) !important;
             background: rgba(255, 255, 255, 0.02) !important;
             border-radius: 8px;
@@ -104,7 +134,7 @@
             transition: transform 0.1s ease, border-color 0.1s ease;
         }
         
-        /* FLIP EFFECTS CODE */
+        /* POP & FLIP ANIMATION EFFECTS */
         .tile.pop {
             transform: scale(1.08);
             border-color: rgba(255, 255, 255, 0.45) !important;
@@ -141,12 +171,12 @@
         /* DYNAMIC HINT BOX WRAPPER */
         #hint-display-box {
             width: 100%;
-            max-width: 440px;
-            min-height: 54px;
+            max-width: 500px;
+            min-height: 56px;
             background: rgba(255, 255, 255, 0.01);
             border: 1px dashed rgba(255, 255, 255, 0.05);
             border-radius: 8px;
-            margin: 0 auto 25px auto;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -184,8 +214,7 @@
             font-weight: 600;
             border-radius: 20px;
             cursor: pointer;
-            margin: 0 auto 25px auto;
-            display: block;
+            margin-bottom: 30px;
             transition: all 0.3s ease;
         }
         .hint-trigger-btn:hover:not(:disabled) {
@@ -204,12 +233,10 @@
         /* KEYBOARD WRAPPER CONFIG */
         #keyboard-container {
             width: 100% !important;
-            max-width: 520px !important;
+            max-width: 500px !important;
             display: flex !important;
             flex-direction: column !important;
             gap: 8px !important;
-            margin: 0 auto !important;
-            padding: 0 10px !important;
             box-sizing: border-box !important;
         }
         .keyboard-row {
@@ -222,10 +249,10 @@
             background: rgba(255, 255, 255, 0.06) !important;
             border: 1px solid rgba(255, 255, 255, 0.03) !important;
             color: rgba(255, 255, 255, 0.9) !important;
-            padding: 16px 10px;
+            padding: 16px 8px;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 500;
             flex: 1;
             text-transform: uppercase;
@@ -233,12 +260,22 @@
         }
         .key.large {
             flex: 1.8;
-            font-size: 0.75rem;
-            letter-spacing: 1px;
+            font-size: 0.7rem;
+            letter-spacing: 0.5px;
         }
         .key:hover {
             background: rgba(255, 255, 255, 0.15) !important;
             color: #ffffff !important;
+        }
+
+        /* HIDDEN KEYBOARD INTERCEPTOR FOR MOBILE DEVICE COMPATIBILITY */
+        #mobile-keyboard-trigger {
+            position: absolute;
+            top: -1000px;
+            left: -1000px;
+            opacity: 0;
+            width: 1px;
+            height: 1px;
         }
 
         /* RULES MODAL POPUP DIALOG */
@@ -304,7 +341,7 @@
         .rules-content p {
             font-size: 0.95rem;
             line-height: 1.6;
-            color: rgba(255,255,255,0.7);
+            color: rgba(255, 255, 255, 0.7);
             margin: 0 0 20px 0;
         }
         .example-container {
@@ -372,19 +409,43 @@
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
+        /* MEDIA QUERIES: RESPONSIVE FALLBACKS FOR LAPTOPS & TABLETS */
+        @media (max-width: 900px) {
+            .game-container-split {
+                flex-direction: column;
+                align-items: center;
+                gap: 30px;
+            }
+            .split-left-grid, .split-right-dashboard {
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                flex: none;
+            }
+            .hint-trigger-btn {
+                margin: 0 auto 25px auto;
+                display: block;
+            }
+        }
+
         @media (max-width: 480px) {
             .tile { width: 46px; height: 46px; font-size: 1.2rem; border-radius: 6px; }
-            .key { padding: 14px 2px; font-size: 0.75rem; }
-            .key.large { font-size: 0.6rem; }
             .game-title { font-size: 2.5rem; }
             .modal-card { padding: 20px; }
             #hint-display-box { max-width: 100%; }
+            
+            /* COMPATIBILITY INTERCEPT: HIDE VIRTUAL PANEL SO MOBILE NATIVE KEYPAD LOADS CLEANLY */
+            #keyboard-container {
+                display: none !important;
+            }
         }
     </style>
 </head>
 <body>
     
     <div id="toast-container"></div>
+
+    <input type="text" id="mobile-keyboard-trigger" autocomplete="off" autocapitalize="none" inputmode="text">
 
     <div class="modal-overlay" id="rules-modal">
         <div class="modal-card">
@@ -447,14 +508,22 @@
             <button class="help-btn" id="open-rules" title="How to Play">?</button>
         </div>
 
-        <div id="wordle-grid"></div>
+        <div class="game-container-split">
+            
+            <div class="split-left-grid">
+                <div id="wordle-grid"></div>
+            </div>
+            
+            <div class="split-right-dashboard">
+                <div id="hint-display-box">
+                    <p id="hint-text">The crypt box hums silently... seek clues below if you lose your way.</p>
+                </div>
+                <button class="hint-trigger-btn" id="hint-btn">Unlock Hint (3 Left)</button>
 
-        <div id="hint-display-box">
-            <p id="hint-text">The crypt box hums silently... seek clues below if you lose your way.</p>
+                <div id="keyboard-container"></div>
+            </div>
+
         </div>
-        <button class="hint-trigger-btn" id="hint-btn">Unlock Hint (3 Left)</button>
-
-        <div id="keyboard-container"></div>
     </main>
 
     <footer>

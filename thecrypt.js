@@ -1,5 +1,5 @@
 // ==========================================================================
-// CRYPT INTERACTIVE GAME MECHANICS ENGINE
+// CRYPT INTERACTIVE GAME MECHANICS ENGINE WITH MOBILE NATIVE DUAL-INPUTS
 // ==========================================================================
 
 const POEM_ANSWERS = Object.keys(CRYPT_DICTIONARY);
@@ -17,13 +17,18 @@ document.addEventListener("DOMContentLoaded", () => {
     initializeKeyboard();
     setupRulesModal();
     setupHintSystem();
+    setupMobileInputSystem();
 
+    // Balanced desktop event typing listener fallback
     document.addEventListener("keydown", (e) => {
         if (isGameOver) return;
         
         const modal = document.getElementById("rules-modal");
         if (modal && modal.classList.contains("active")) return;
         
+        // Shut engine context typing down if dimensions evaluate as phone size
+        if (window.innerWidth <= 480) return;
+
         if (e.key === "Enter") {
             processGuessSubmit();
         } else if (e.key === "Backspace") {
@@ -33,6 +38,65 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
+
+// SYSTEM LINK TO NATIVE SYSTEM PHONE KEYBOARD HOOK
+function setupMobileInputSystem() {
+    const hiddenInput = document.getElementById("mobile-keyboard-trigger");
+    const gridContainer = document.getElementById("wordle-grid");
+
+    if (!hiddenInput || !gridContainer) return;
+
+    // Open native mobile keyboard whenever layout background space area is tapped
+    document.addEventListener("click", (e) => {
+        const modal = document.getElementById("rules-modal");
+        if (modal && modal.classList.contains("active")) return;
+        if (e.target.closest("header") || e.target.closest("footer") || e.target.id === "hint-btn" || e.target.id === "open-rules") return;
+
+        if (!isGameOver && window.innerWidth <= 480) {
+            hiddenInput.focus();
+        }
+    });
+
+    // Automatically trigger focused device popups right after rules overlay exits
+    const closeBtn = document.getElementById("close-rules");
+    if (closeBtn) {
+        closeBtn.addEventListener("click", () => {
+            if (window.innerWidth <= 480) {
+                setTimeout(() => hiddenInput.focus(), 400);
+            }
+        });
+    }
+
+    // Intercept software alphanumeric stream arrays from active devices
+    hiddenInput.addEventListener("input", (e) => {
+        if (isGameOver || window.innerWidth > 480) {
+            hiddenInput.value = "";
+            return;
+        }
+
+        const dataValue = e.data;
+        
+        if (dataValue && /^[a-zA-Z]$/.test(dataValue)) {
+            if (userGuess.length < WORD_LENGTH) {
+                injectLetterTile(dataValue);
+            }
+        } 
+        else if (hiddenInput.value.length < userGuess.length) {
+            processBackspace();
+        }
+        
+        hiddenInput.value = userGuess;
+    });
+
+    // Intercept soft-key submissions controls on phone panels
+    hiddenInput.addEventListener("keydown", (e) => {
+        if (window.innerWidth <= 480 && e.key === "Enter") {
+            e.preventDefault();
+            processGuessSubmit();
+            hiddenInput.value = userGuess;
+        }
+    });
+}
 
 function setupHintSystem() {
     const hintBtn = document.getElementById("hint-btn");
@@ -55,6 +119,10 @@ function setupHintSystem() {
             hintText.classList.add("reveal-mode");
             hintBox.classList.add("active");
             hintText.style.opacity = "1";
+            
+            if (window.innerWidth <= 480) {
+                document.getElementById("mobile-keyboard-trigger").focus();
+            }
         }, 200);
 
         if (hintsUsed === 1) {
@@ -91,6 +159,8 @@ function initializeGrid() {
     const gridContainer = document.getElementById("wordle-grid");
     if (!gridContainer) return;
 
+    gridContainer.innerHTML = "";
+
     for (let i = 0; i < MAX_ATTEMPTS; i++) {
         const row = document.createElement("div");
         row.classList.add("grid-row");
@@ -107,6 +177,8 @@ function initializeGrid() {
 function initializeKeyboard() {
     const keyboardContainer = document.getElementById("keyboard-container");
     if (!keyboardContainer) return;
+
+    keyboardContainer.innerHTML = "";
 
     const keyRows = [
         ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
@@ -258,6 +330,10 @@ function processGuessSubmit() {
 
         currentAttempt++;
         userGuess = "";
+        
+        if (window.innerWidth <= 480) {
+            document.getElementById("mobile-keyboard-trigger").value = "";
+        }
 
         if (currentAttempt >= MAX_ATTEMPTS) {
             showCryptToast(`🔒 The lock mechanism froze. The secret keyword was: **${SECRET_WORD}**`, 6000);
