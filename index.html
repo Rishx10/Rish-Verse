@@ -241,8 +241,7 @@
         </h3>
 
         <p>
-            Football edits, Messi tributes,
-            cinematic reels and motion stories.
+         Welcome to The Crypt, a word puzzle game!
         </p>
 
     </a>
@@ -371,6 +370,14 @@
 
         <script type="module"
         src="reviews.js"></script>
+
+        <script>
+      window.addEventListener("pageshow", function (event) {
+        if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+            window.location.reload();
+        }
+        });
+       </script>
 
 </body>
 
