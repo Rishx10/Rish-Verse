@@ -17,6 +17,16 @@
     <link rel="stylesheet"
           href="style.css">
 
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+          rel="stylesheet">
+
 </head>
 
 <body>
@@ -105,12 +115,59 @@
 
         </div>
 
+        <section class="review-section">
+
+            <div class="review-container">
+
+                <h2>
+                    Leave Your Echo
+                </h2>
+
+                <p class="review-subtext">
+                    Tell me how this space felt to you.
+                </p>
+
+                <div class="star-rating">
+
+                    <span data-rating="1">★</span>
+                    <span data-rating="2">★</span>
+                    <span data-rating="3">★</span>
+                    <span data-rating="4">★</span>
+                    <span data-rating="5">★</span>
+
+                </div>
+
+                <form id="reviewForm">
+
+                    <input type="text"
+                           id="reviewName"
+                           placeholder="Your name (optional)">
+
+                    <textarea id="reviewText"
+                              placeholder="Share what you felt..."
+                              required></textarea>
+
+                    <button type="submit">
+
+                        Submit Review
+
+                    </button>
+
+                </form>
+
+                <div id="reviewsContainer"></div>
+
+            </div>
+
+        </section>
+
     </div>
 
 </section>
 
 
 <script src="script.js"></script>
+<script type="module" src="reviews.js"></script>
 
 </body>
 

@@ -102,9 +102,7 @@ window.addEventListener("scroll", () => {
 
 const revealElements =
 document.querySelectorAll(
-
     ".glass-card, .social-card, .about-left"
-
 );
 
 function revealOnScroll(){
@@ -130,41 +128,45 @@ function revealOnScroll(){
 
 }
 
-revealElements.forEach(element => {
+// Only initialize reveal positioning states if the target elements actually exist on the current page
+if(revealElements.length > 0) {
 
-    element.style.opacity = "0";
+    revealElements.forEach(element => {
 
-    element.style.transform =
-    "translateY(40px)";
+        element.style.opacity = "0";
 
-    element.style.transition =
-    "all 1s ease";
+        element.style.transform =
+        "translateY(40px)";
 
-});
+        element.style.transition =
+        "all 1s ease";
 
-window.addEventListener(
-    "scroll",
-    revealOnScroll
-);
+    });
 
-revealOnScroll();
+    window.addEventListener(
+        "scroll",
+        revealOnScroll
+    );
+
+    revealOnScroll();
+
+}
 
 
 // =========================
-// PARALLAX EFFECT
+// PARALLAX EFFECT (CORRECTED)
 // =========================
 
 window.addEventListener("scroll", () => {
 
-    const scrollY =
-    window.scrollY;
+    const scrollY = window.scrollY;
 
     slides.forEach(slide => {
-
-        slide.style.transform =
-
-        `scale(1.12)
-         translateY(${scrollY * 0.08}px)`;
+        
+        /* FIXED: We use translateY for vertical shifting but omit the explicit inline scale() declaration.
+           This allows your continuous CSS `@keyframes slowZoom` scale parameters to run completely uninterrupted.
+        */
+        slide.style.transform = `translateY(${scrollY * 0.08}px)`;
 
     });
 
@@ -172,76 +174,52 @@ window.addEventListener("scroll", () => {
 
 
 // =========================
-// GALLERY LIGHTBOX
+// GALLERY LIGHTBOX (INTEGRATED TARGET ROUTER)
 // =========================
 
-const galleryImages =
+const galleryImages = document.querySelectorAll(".masonry-gallery img");
+const lightbox = document.querySelector(".lightbox");
+const lightboxImage = document.querySelector(".lightbox-image");
+const closeLightbox = document.querySelector(".close-lightbox");
 
-document.querySelectorAll(
-    ".masonry-gallery img"
-);
-
-const lightbox =
-document.querySelector(".lightbox");
-
-const lightboxImage =
-document.querySelector(".lightbox-image");
-
-const closeLightbox =
-document.querySelector(".close-lightbox");
-
+// Global dynamic target container used by the review listener engine
+window.currentImageTargetId = null;
 
 galleryImages.forEach(image => {
-
     image.addEventListener("click", () => {
+        if(!lightbox || !lightboxImage) return;
 
-        if(!lightbox ||
-           !lightboxImage) return;
-
-        lightbox.classList.add("active");
-
+        // 1. Set image asset frame view
         lightboxImage.src = image.src;
 
-    });
+        // 2. Extract specific image filename (e.g., "capture3.jpg")
+        const filename = image.src.split("/").pop();
+        window.currentImageTargetId = "image-" + filename;
 
+        // 3. Show the interactive modal window
+        lightbox.classList.add("active");
+
+        // 4. Trigger the review script to hot-reload comments for this file
+        window.dispatchEvent(new CustomEvent("lightboxOpened"));
+    });
 });
 
-
 if(closeLightbox){
-
-    closeLightbox.addEventListener(
-        "click",
-        () => {
-
-            lightbox.classList.remove(
-                "active"
-            );
-
-        }
-    );
-
+    closeLightbox.addEventListener("click", () => {
+        lightbox.classList.remove("active");
+        window.currentImageTargetId = null;
+    });
 }
-
 
 if(lightbox){
-
-    lightbox.addEventListener(
-        "click",
-        (e) => {
-
-            if(e.target === lightbox){
-
-                lightbox.classList.remove(
-                    "active"
-                );
-
-            }
-
+    lightbox.addEventListener("click", (e) => {
+        // Prevent click events inside the main content window from shutting down the session prematurely
+        if(e.target === lightbox){
+            lightbox.classList.remove("active");
+            window.currentImageTargetId = null;
         }
-    );
-
+    });
 }
-
 
 // =========================
 // SCROLL PROGRESS BAR
@@ -255,21 +233,16 @@ window.addEventListener("scroll", () => {
     if(!progressBar) return;
 
     const scrollTop =
-
     document.documentElement.scrollTop;
 
     const scrollHeight =
-
     document.documentElement.scrollHeight -
-
     document.documentElement.clientHeight;
 
     const scrollPercent =
-
     (scrollTop / scrollHeight) * 100;
 
     progressBar.style.width =
-
     scrollPercent + "%";
 
 });
@@ -285,7 +258,6 @@ document.querySelector(
 );
 
 const internalLinks =
-
 document.querySelectorAll(
     'a[href$=".html"]'
 );
@@ -294,11 +266,9 @@ internalLinks.forEach(link => {
 
     link.addEventListener(
         "click",
-
         function(e){
 
             const target =
-
             this.getAttribute("href");
 
             if(target &&
@@ -320,7 +290,6 @@ internalLinks.forEach(link => {
             }
 
         }
-
     );
 
 });

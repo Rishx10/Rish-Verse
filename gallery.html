@@ -138,20 +138,37 @@
 
     <!-- LIGHTBOX -->
 
-    <div class="lightbox">
+   <div class="lightbox">
+    <span class="close-lightbox">&times;</span>
+    
+    <div class="lightbox-wrapper">
+        <div class="lightbox-media-side">
+            <img class="lightbox-image" src="" alt="Cinematic Frame">
+        </div>
+        
+        <div class="lightbox-interactive-side">
+            <div class="review-container modal-reviews">
+                <h2>Frame Echo</h2>
+                <p class="review-subtext">Leave a thought on this specific capture.</p>
 
-        <span class="close-lightbox">
-            ×
-        </span>
+                <div class="star-rating modal-stars">
+                    <span data-rating="1">★</span>
+                    <span data-rating="2">★</span>
+                    <span data-rating="3">★</span>
+                    <span data-rating="4">★</span>
+                    <span data-rating="5">★</span>
+                </div>
 
-        <img class="lightbox-image"
-             src="">
+                <form id="reviewForm" class="modal-form">
+                    <input type="text" id="reviewName" placeholder="Your name (optional)">
+                    <textarea id="reviewText" placeholder="Share your perspective..." required></textarea>
+                    <button type="submit">Submit Echo</button>
+                </form>
 
+                <div id="reviewsContainer" class="modal-feed"></div>
+            </div>
+        </div>
     </div>
-
-
-    <script src="script.js"></script>
-
-</body>
+  </div>
 
 </html>

@@ -113,7 +113,7 @@ body{
 
     transition:opacity 2s ease;
 
-    transform:scale(1.08);
+    /* Removed base transform scale rule to allow continuous smooth background parallax syncing */
 
     animation:slowZoom 18s linear infinite;
 }
@@ -309,6 +309,8 @@ nav{
 
     font-weight:500;
 
+    opacity:0; /* Prevents text from flashing before running fade animation */
+
     animation:fadeUp 1.5s ease forwards;
 }
 
@@ -323,6 +325,8 @@ nav{
     color:#c7c7c7;
 
     margin-bottom:40px;
+
+    opacity:0; /* Prevents text from flashing before running fade animation */
 
     animation:fadeUp 2s ease forwards;
 }
@@ -422,7 +426,7 @@ nav{
 
     0%{
         opacity:0;
-        transform:translateY(0px);
+        transform:translateY(0px) translateX(-50%);
     }
 
     50%{
@@ -431,7 +435,7 @@ nav{
 
     100%{
         opacity:0;
-        transform:translateY(20px);
+        transform:translateY(20px) translateX(-50%);
     }
 
 }
@@ -726,6 +730,8 @@ footer{
     }
 
 }
+
+
 /* =========================
    GALLERY HERO
 ========================= */
@@ -1141,6 +1147,8 @@ footer{
 
     color:#d7d7d7;
 }
+
+
 /* =========================
    POEMS HERO SECTION
 ========================= */
@@ -1265,6 +1273,8 @@ footer{
     }
 
 }
+
+
 /* =========================
    SCROLL PROGRESS BAR
 ========================= */
@@ -1292,6 +1302,7 @@ footer{
     box-shadow:
     0 0 20px rgba(125,143,122,0.45);
 }
+
 .glass-card{
 
     text-decoration:none;
@@ -1300,6 +1311,8 @@ footer{
 
     display:block;
 }
+
+
 /* =========================
    PAGE TRANSITION
 ========================= */
@@ -1327,6 +1340,8 @@ footer{
 
     pointer-events:auto;
 }
+
+
 /* =========================
    REVIEW SECTION
 ========================= */
@@ -1379,12 +1394,17 @@ footer{
 
     color:#444;
 
+    display:inline-block; /* Essential to allow scale transforms to apply cleanly on click */
+
     transition:0.3s ease;
 }
 
+/* CONSOLIDATED REVIEW STARS FIX: Merged structural features to follow signature sage green palette */
 .star-rating span.active{
 
     color:#7d8f7a;
+
+    transform:scale(1.15);
 
     text-shadow:
     0 0 15px rgba(125,143,122,0.5);
@@ -1500,10 +1520,144 @@ footer{
 
     color:#d7d7d7;
 }
-.star-rating span.active{
+/* ==========================================================================
+   CINEMATIC SPLIT LIGHTBOX EXTENSIONS
+   ========================================================================== */
 
-    color:#d6b36a;
+.lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(4, 4, 4, 0.98);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    padding: 20px;
+}
 
-    transform:scale(1.15);
+.lightbox.active {
+    opacity: 1;
+    pointer-events: auto;
+}
 
+.lightbox-wrapper {
+    display: flex;
+    width: 90vw;
+    max-width: 1400px;
+    height: 85vh;
+    background: rgba(15, 15, 15, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8);
+    transition: transform 0.4s ease;
+    transform: scale(0.95);
+}
+
+.lightbox.active .lightbox-wrapper {
+    transform: scale(1);
+}
+
+/* Photo Side */
+.lightbox-media-side {
+    flex: 1.6;
+    background: #020202;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    padding: 30px;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.lightbox-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 4px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+}
+
+/* Reviews Side Panel */
+.lightbox-interactive-side {
+    flex: 1;
+    background: rgba(10, 10, 10, 0.8);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 40px 30px;
+}
+
+.modal-reviews {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+.modal-feed {
+    margin-top: 25px;
+    max-height: none !important;
+}
+
+/* UI Adjustments inside modal */
+.close-lightbox {
+    position: absolute;
+    top: 25px;
+    right: 35px;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 42px;
+    font-weight: 300;
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+    z-index: 2100;
+    line-height: 1;
+}
+
+.close-lightbox:hover {
+    color: #7d8f7a;
+    transform: scale(1.05);
+}
+
+/* Responsive Handlers for Tablets and Phones */
+@media (max-width: 992px) {
+    .lightbox {
+        padding: 10px;
+        overflow-y: auto;
+        align-items: flex-start;
+    }
+    .lightbox-wrapper {
+        flex-direction: column;
+        height: auto;
+        min-height: 95vh;
+        margin-top: 50px;
+        width: 100%;
+    }
+    .lightbox-media-side {
+        height: 50vh;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 15px;
+    }
+    .lightbox-interactive-side {
+        height: auto;
+        overflow-y: visible;
+        padding: 25px 20px;
+    }
+    .close-lightbox {
+        top: 10px;
+        right: 20px;
+    }
 }
