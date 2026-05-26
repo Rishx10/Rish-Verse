@@ -67,6 +67,21 @@ function setupMobileInputSystem() {
         });
     }
 
+    // BULLETPROOF MOBILE BACKSPACE & ENTER INTERCEPTOR
+    hiddenInput.addEventListener("keydown", (e) => {
+        if (window.innerWidth <= 480) {
+            if (e.key === "Backspace") {
+                e.preventDefault(); // Stop default input layout behavior
+                processBackspace();
+                hiddenInput.value = userGuess; // Keep hidden buffer perfectly synced
+            } else if (e.key === "Enter") {
+                e.preventDefault();
+                processGuessSubmit();
+                hiddenInput.value = userGuess;
+            }
+        }
+    });
+
     // Intercept software alphanumeric stream arrays from active devices
     hiddenInput.addEventListener("input", (e) => {
         if (isGameOver || window.innerWidth > 480) {
@@ -76,25 +91,19 @@ function setupMobileInputSystem() {
 
         const dataValue = e.data;
         
+        // Handle standard character additions
         if (dataValue && /^[a-zA-Z]$/.test(dataValue)) {
             if (userGuess.length < WORD_LENGTH) {
                 injectLetterTile(dataValue);
             }
         } 
-        else if (hiddenInput.value.length < userGuess.length) {
+        
+        // Safety secondary calculation loop fallback for variable mobile delete triggers
+        if (hiddenInput.value.length < userGuess.length) {
             processBackspace();
         }
         
         hiddenInput.value = userGuess;
-    });
-
-    // Intercept soft-key submissions controls on phone panels
-    hiddenInput.addEventListener("keydown", (e) => {
-        if (window.innerWidth <= 480 && e.key === "Enter") {
-            e.preventDefault();
-            processGuessSubmit();
-            hiddenInput.value = userGuess;
-        }
     });
 }
 
@@ -296,6 +305,9 @@ function processGuessSubmit() {
         }
     });
 
+    // Capture the submission snapshot guess string context right now before looping clears it out
+    const activeSubmittedGuess = userGuess;
+
     for (let i = 0; i < WORD_LENGTH; i++) {
         const tile = document.getElementById(`row-${currentAttempt}-tile-${i}`);
         
@@ -308,7 +320,7 @@ function processGuessSubmit() {
                 tile.style.borderColor = tileColors[i];
                 tile.classList.add("reveal");
                 
-                const letter = userGuess[i];
+                const letter = activeSubmittedGuess[i];
                 const keyElement = document.getElementById(`key-${letter}`);
                 if (keyElement && keyUpdates[letter]) {
                     keyElement.style.background = keyUpdates[letter];
@@ -321,7 +333,7 @@ function processGuessSubmit() {
 
     const totalAnimationTime = (WORD_LENGTH * 150) + 250;
     setTimeout(() => {
-        if (userGuess === SECRET_WORD) {
+        if (activeSubmittedGuess === SECRET_WORD) {
             showCryptToast("🌒 Crypt Deciphered Successfully. Your soul aligns with the verse.", 5000);
             isGameOver = true;
             document.getElementById("hint-btn").disabled = true;
