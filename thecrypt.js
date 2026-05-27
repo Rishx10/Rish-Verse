@@ -3,7 +3,7 @@
 // ==========================================================================
 
 const POEM_ANSWERS = Object.keys(CRYPT_DICTIONARY);
-const SECRET_WORD = POEM_ANSWERS[Math.floor(Math.random() * POEM_ANSWERS.length)];
+let SECRET_WORD = POEM_ANSWERS[Math.floor(Math.random() * POEM_ANSWERS.length)];
 const MAX_ATTEMPTS = 6;
 const WORD_LENGTH = 5;
 
@@ -240,6 +240,7 @@ function injectLetterTile(letter) {
     }
 }
 
+// Fixed desktop typing reset sync parameters
 function processBackspace() {
     if (userGuess.length === 0) return;
     const activeTile = document.getElementById(`row-${currentAttempt}-tile-${userGuess.length - 1}`);
@@ -334,9 +335,15 @@ function processGuessSubmit() {
     const totalAnimationTime = (WORD_LENGTH * 150) + 250;
     setTimeout(() => {
         if (activeSubmittedGuess === SECRET_WORD) {
-            showCryptToast("🌒 Crypt Deciphered Successfully. Your soul aligns with the verse.", 5000);
+            showCryptToast("🌒 Crypt Deciphered Successfully. Your soul aligns with the verse.", 4500);
             isGameOver = true;
             document.getElementById("hint-btn").disabled = true;
+
+            // DYNAMIC AUTOMATIC RESET LOOP (5 SECONDS BUFFER)
+            setTimeout(() => {
+                showCryptToast("🔄 The layout resets... rolling a new verse fragment.", 3000);
+                resetCryptGame();
+            }, 5000);
             return;
         }
 
@@ -348,9 +355,56 @@ function processGuessSubmit() {
         }
 
         if (currentAttempt >= MAX_ATTEMPTS) {
-            showCryptToast(`🔒 The lock mechanism froze. The secret keyword was: **${SECRET_WORD}**`, 6000);
+            showCryptToast(`🔒 The lock mechanism froze. The secret keyword was: **${SECRET_WORD}**`, 4500);
             isGameOver = true;
             document.getElementById("hint-btn").disabled = true;
+
+            // DYNAMIC AUTOMATIC RESET LOOP (5 SECONDS BUFFER)
+            setTimeout(() => {
+                showCryptToast("🔄 The vault cycles... a new keyword emerges.", 3000);
+                resetCryptGame();
+            }, 5000);
         }
     }, totalAnimationTime);
+}
+
+// COMPREHENSIVE AUTOMATIC GAME RESET MATRIX
+function resetCryptGame() {
+    // 1. Roll a completely new secret keyword out of your words.js list
+    const answersPool = Object.keys(CRYPT_DICTIONARY);
+    SECRET_WORD = answersPool[Math.floor(Math.random() * answersPool.length)];
+    
+    // 2. Clear core logical state parameters
+    currentAttempt = 0;
+    userGuess = "";
+    isGameOver = false;
+    hintsUsed = 0;
+
+    // 3. Clear the main board layout grid tiles completely
+    initializeGrid();
+
+    // 4. Reset virtual keyboard keycap structural backdrops to original states
+    initializeKeyboard();
+
+    // 5. Reset the Hint Display Controller text box & interactive button setup
+    const hintBtn = document.getElementById("hint-btn");
+    const hintBox = document.getElementById("hint-display-box");
+    const hintText = document.getElementById("hint-text");
+
+    if (hintBtn && hintBox && hintText) {
+        hintBtn.innerText = "Unlock Hint (3 Left)";
+        hintBtn.disabled = false;
+        hintBox.classList.remove("active");
+        hintText.innerText = "The crypt box hums silently... seek clues below if you lose your way.";
+        hintText.classList.remove("reveal-mode");
+    }
+
+    // 6. Clear device buffer captures if running phone view layouts
+    if (window.innerWidth <= 480) {
+        const mobileTrigger = document.getElementById("mobile-keyboard-trigger");
+        if (mobileTrigger) {
+            mobileTrigger.value = "";
+            mobileTrigger.focus(); // Returns mobile soft focus smoothly back to layout
+        }
+    }
 }
