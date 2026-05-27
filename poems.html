@@ -157,12 +157,55 @@
 
             </a>
 
+
+            <a href="p4.html"
+                class="poem-card">
+    
+                 <span>
+                      Love / Loss
+                 </span>
+    
+                 <h2>
+                      The Rouge In My Throat
+                 </h2>
+    
+                 <p>
+                      Some words outlive the heart that wrote them.
+                 </p>
+
+            </a>
+
+            <a href="p5.html"
+                class="poem-card">
+    
+                 <span>
+                      Freedom / Life
+                 </span>
+    
+                 <h2>
+                      Liberation 
+                 </h2>
+    
+                 <p>
+                      The soul's quiet rebellion against the cage of flesh.
+                 </p>
+
+            </a>
+
         </div>
 
     </section>
 
 
     <script src="script.js"></script>
+
+    <script>
+    window.addEventListener("pageshow", function (event) {
+        if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+            window.location.reload();
+        }
+    });
+</script>
 
 </body>
 
