@@ -1,166 +1,228 @@
-import { db } from "./firebase.js";
-import {
-    collection,
-    addDoc,
-    serverTimestamp,
-    query,
-    where,
-    orderBy,
-    onSnapshot
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+// ==========================================================================
+// RISH VERSE UNIFIED INTERACTIVE DATABASE ROUTER (FROM SCRATCH)
+// ==========================================================================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, push, onValue, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-// Page level path string calculator helper
-function getCurrentPageId() {
-    const path = window.location.pathname;
-    const pageName = path.split("/").pop() || "index.html";
-    if (pageName === "" || pageName === "index.html") return "page-index";
-    return "page-" + pageName.replace(".html", "");
-}
+// YOUR SYSTEM DATABASE INSTANCE CONFIGURATION
+const firebaseConfig = {
+    databaseURL: "https://rish-verse-default-rtdb.firebaseio.com"
+};
 
-window.addEventListener("DOMContentLoaded", () => {
-    
-    // --- 1. CORE FLOW SETUP (MAIN PAGE CONTEXT) ---
-    const pageTargetId = getCurrentPageId();
-    setupReviewContainer(document.getElementById("reviewForm"), document.getElementById("reviewsContainer"), pageTargetId, false);
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-    // --- 2. MODAL FLOW SETUP (LIGHTBOX CONTEXT) ---
-    const modalForm = document.querySelector(".modal-form");
-    const modalFeed = document.querySelector(".modal-feed");
-    let unsubsribeModalFeed = null;
+// ──────────────────────────────────────────────────────────────────────────
+// POEM & HOME SCREEN FIVE-STAR RATINGS (YOUR WORKING ORIGINAL LOGIC)
+// ──────────────────────────────────────────────────────────────────────────
+function initPoemSystem() {
+    const reviewForm = document.getElementById("reviewForm");
+    const poemTitleElement = document.querySelector(".poem-title");
+    const stars = document.querySelectorAll(".star-rating span");
+    let selectedRating = 0;
 
-    // Listen for custom trigger dispatched by script.js when a photo gets clicked open
-    window.addEventListener("lightboxOpened", () => {
-        const targetImageId = window.currentImageTargetId;
-        if (!targetImageId) return;
+    if (!reviewForm) return;
 
-        // Tear down previous live query loops if clicking between separate image thumbnails
-        if (unsubsribeModalFeed) {
-            unsubsribeModalFeed();
+    const poemId = poemTitleElement ? poemTitleElement.innerText.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase() : "global-home";
+
+    if (stars.length > 0) {
+        stars.forEach(star => {
+            star.addEventListener("click", () => {
+                selectedRating = parseInt(star.getAttribute("data-rating"), 10);
+                updateStarDisplay(stars, selectedRating);
+            });
+            star.addEventListener("mouseover", () => {
+                updateStarDisplay(stars, parseInt(star.getAttribute("data-rating"), 10));
+            });
+            star.addEventListener("mouseleave", () => {
+                updateStarDisplay(stars, selectedRating);
+            });
+        });
+    }
+
+    reviewForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const nameInput = document.getElementById("reviewName")?.value.trim() || "Anonymous Voyager";
+        const textInput = document.getElementById("reviewText")?.value.trim() || "";
+
+        if (selectedRating === 0) {
+            alert("⚠️ Please select a star rating before dropping your echo.");
+            return;
         }
 
-        // Spin up a brand new real-time pipe focused entirely on this specific photo thumbnail frame
-        unsubsribeModalFeed = setupReviewContainer(modalForm, modalFeed, targetImageId, true);
+        const reviewPayload = {
+            name: nameInput,
+            text: textInput,
+            rating: selectedRating,
+            timestamp: Date.now()
+        };
+
+        push(ref(db, `reviews/${poemId}`), reviewPayload).then(() => {
+            if (document.getElementById("reviewText")) document.getElementById("reviewText").value = "";
+            if (document.getElementById("reviewName")) document.getElementById("reviewName").value = "";
+            selectedRating = 0;
+            updateStarDisplay(stars, 0);
+            alert("✨ Your echo has been etched into the database.");
+        });
     });
 
-    // --- 3. MASTER INJECTION CONTROLLER ENGINE ---
-    function setupReviewContainer(formElement, feedElement, trackingId, isLightboxModal = false) {
-        if (!feedElement) return null;
-
-        let localSelectedRating = 0;
-        let starSelectorStr = isLightboxModal ? ".modal-stars span" : ".star-rating span";
-        const targetStars = document.querySelectorAll(starSelectorStr);
-
-        // Track star clicks on current active form elements context
-        if (isLightboxModal && targetStars.length > 0) {
-            targetStars.forEach(star => {
-                // Remove previous clone states to cleanly capture click nodes
-                const freshStar = star.cloneNode(true);
-                star.parentNode.replaceChild(freshStar, star);
-
-                freshStar.addEventListener("click", () => {
-                    localSelectedRating = Number(freshStar.dataset.rating);
-                    const allModalStars = document.querySelectorAll(".modal-stars span");
-                    allModalStars.forEach(s => s.classList.remove("active"));
-                    for (let i = 0; i < localSelectedRating; i++) {
-                        allModalStars[i].classList.add("active");
-                    }
-                });
-            });
-        } else if (!isLightboxModal && targetStars.length > 0) {
-            // Main page style clicks
-            targetStars.forEach(star => {
-                star.addEventListener("click", () => {
-                    localSelectedRating = Number(star.dataset.rating);
-                    targetStars.forEach(s => s.classList.remove("active"));
-                    for (let i = 0; i < localSelectedRating; i++) {
-                        targetStars[i].classList.add("active");
-                    }
-                });
-            });
-        }
-
-        // Process submissions accurately mapping destination properties
-        if (formElement) {
-            // Clean previous submit references if updating modal components
-            const newForm = formElement.cloneNode(true);
-            formElement.parentNode.replaceChild(newForm, formElement);
-
-            newForm.addEventListener("submit", async (e) => {
-                e.preventDefault();
-
-                // Dynamically fetch accurate target text values across split fields
-                const nameInput = newForm.querySelector("input[type='text']");
-                const textInput = newForm.querySelector("textarea");
-
-                const finalName = nameInput.value || "Anonymous";
-                const finalContextText = textInput.value;
-                const activeLiveId = isLightboxModal ? window.currentImageTargetId : trackingId;
-
-                if (localSelectedRating === 0) {
-                    alert("Please select stars.");
-                    return;
-                }
-
-                try {
-                    await addDoc(collection(db, "reviews"), {
-                        name: finalName,
-                        text: finalContextText,
-                        rating: localSelectedRating,
-                        targetId: activeLiveId,
-                        createdAt: serverTimestamp()
-                    });
-
-                    alert("Review submitted 🌒");
-                    newForm.reset();
-                    
-                    const starsToClean = isLightboxModal ? document.querySelectorAll(".modal-stars span") : targetStars;
-                    starsToClean.forEach(s => s.classList.remove("active"));
-                    localSelectedRating = 0;
-                } catch (err) {
-                    console.error("Firestore Error: ", err);
-                    alert("Submission failed");
-                }
-            });
-        }
-
-        // Active Cloud Query Setup
-        const activeLookupId = isLightboxModal ? window.currentImageTargetId : trackingId;
-        const q = query(
-            collection(db, "reviews"),
-            where("targetId", "==", activeLookupId),
-            orderBy("createdAt", "desc")
-        );
-
-        const closeConnection = onSnapshot(q, (snapshot) => {
-            feedElement.innerHTML = "";
-
-            if (snapshot.empty) {
-                feedElement.innerHTML = `<p style="color: #666; font-style: italic; margin-top: 15px;">No thoughts left here yet.</p>`;
+    const reviewsContainer = document.getElementById("reviewsContainer");
+    if (reviewsContainer) {
+        onValue(ref(db, `reviews/${poemId}`), (snapshot) => {
+            reviewsContainer.innerHTML = "";
+            const data = snapshot.val();
+            if (!data) {
+                reviewsContainer.innerHTML = `<p style="font-size:0.9rem; color:rgba(255,255,255,0.3); font-style:italic;">No responses here yet.</p>`;
                 return;
             }
-
-            snapshot.forEach((doc) => {
-                const data = doc.data();
-                let starsString = "";
-                for (let i = 1; i <= 5; i++) {
-                    starsString += i <= data.rating ? "★" : "☆";
-                }
-
-                const card = document.createElement("div");
-                card.classList.add("review-card");
-                card.style.animation = "fadeIn 0.4s ease forwards";
-
-                card.innerHTML = `
-                    <h3>${data.name || "Anonymous"}</h3>
-                    <div class="review-stars" style="color: #7d8f7a; letter-spacing: 2px; margin-bottom: 8px;">${starsString}</div>
-                    <p style="font-size: 14px; line-height: 1.5; color: #ccc;">${data.text}</p>
+            Object.values(data).sort((a,b) => b.timestamp - a.timestamp).forEach(review => {
+                const node = document.createElement("div");
+                node.className = "review-card";
+                node.style.background = "rgba(255,255,255,0.02)";
+                node.style.border = "1px solid rgba(255,255,255,0.05)";
+                node.style.padding = "16px";
+                node.style.borderRadius = "8px";
+                node.style.marginBottom = "12px";
+                let starString = "★".repeat(review.rating) + "☆".repeat(5 - review.rating);
+                node.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.85rem;">
+                        <strong style="color:#7d8f7a;">${escapeHtml(review.name)}</strong>
+                        <span style="color:#ad9363;">${starString}</span>
+                    </div>
+                    <p style="margin:0; font-size:0.9rem; color:rgba(255,255,255,0.8); line-height:1.4;">${escapeHtml(review.text)}</p>
                 `;
-                feedElement.appendChild(card);
+                reviewsContainer.appendChild(node);
             });
-        }, (error) => {
-            console.warn("Firestore pipeline connection notice:", error);
         });
-
-        return closeConnection;
     }
-});
+}
+
+function updateStarDisplay(elements, ranking) {
+    elements.forEach(el => {
+        el.style.color = parseInt(el.getAttribute("data-rating"), 10) <= ranking ? "#ad9363" : "rgba(255, 255, 255, 0.2)";
+    });
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+// EXHIBITION VISUAL LIKES & PANEL COMMENTS (BUILT CLEANLY FROM SCRATCH)
+// ──────────────────────────────────────────────────────────────────────────
+function initGallerySystem() {
+    const galleryForm = document.getElementById("galleryReviewForm");
+    const likeBtn = document.getElementById("galleryLikeBtn");
+
+    if (!galleryForm && !likeBtn) return;
+
+    // Fired by the script.js controller whenever a slide changes or thumbnail is tapped
+    window.addEventListener("lightboxOpened", () => {
+        if (!window.currentImageTargetId) return;
+        syncGallerySocialData(window.currentImageTargetId);
+    });
+
+    if (galleryForm) {
+        galleryForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            if (!window.currentImageTargetId) return;
+
+            const nameInput = document.getElementById("galleryNameField").value.trim();
+            const textInput = document.getElementById("galleryTextField").value.trim();
+            if (!textInput) return;
+
+            const commentPayload = {
+                author: nameInput || "Anonymous Voyager",
+                text: textInput,
+                timestamp: Date.now()
+            };
+
+            push(ref(db, `gallery/${window.currentImageTargetId}/comments`), commentPayload).then(() => {
+                document.getElementById("galleryTextField").value = "";
+                triggerToastNotification("✨ Comment recorded.");
+            });
+        });
+    }
+
+    if (likeBtn) {
+        likeBtn.addEventListener("click", () => {
+            if (!window.currentImageTargetId) return;
+
+            const localLikeKey = `liked_${window.currentImageTargetId}`;
+            const staticLikeRef = ref(db, `gallery/${window.currentImageTargetId}/likes`);
+            let currentLikesCount = parseInt(likeBtn.getAttribute("data-count") || "0", 10);
+
+            if (localStorage.getItem(localLikeKey)) {
+                currentLikesCount = Math.max(0, currentLikesCount - 1);
+                set(staticLikeRef, currentLikesCount).then(() => {
+                    localStorage.removeItem(localLikeKey);
+                    likeBtn.classList.remove("liked");
+                });
+            } else {
+                currentLikesCount += 1;
+                set(staticLikeRef, currentLikesCount).then(() => {
+                    localStorage.setItem(localLikeKey, "true");
+                    likeBtn.classList.add("liked");
+                });
+            }
+        });
+    }
+}
+
+function syncGallerySocialData(targetId) {
+    const commentsContainer = document.getElementById("galleryCommentsBox");
+    const countLabel = document.getElementById("likeCountLabel");
+    const likeBtn = document.getElementById("galleryLikeBtn");
+
+    if (!commentsContainer || !countLabel || !likeBtn) return;
+
+    likeBtn.classList.toggle("liked", !!localStorage.getItem(`liked_${targetId}`));
+
+    // Synchronize Like Counter Stream
+    onValue(ref(db, `gallery/${targetId}/likes`), (snapshot) => {
+        const val = snapshot.val() || 0;
+        countLabel.innerText = val;
+        likeBtn.setAttribute("data-count", val);
+    });
+
+    // Synchronize Scrollable Comments Feed Stream
+    onValue(ref(db, `gallery/${targetId}/comments`), (snapshot) => {
+        commentsContainer.innerHTML = "";
+        const data = snapshot.val();
+
+        if (!data) {
+            commentsContainer.innerHTML = `<p style="font-size:0.85rem; color:rgba(255,255,255,0.2); text-align:center; margin-top:40px; font-style:italic;">Leave your mark below.</p>`;
+            return;
+        }
+
+        Object.values(data).sort((a,b) => b.timestamp - a.timestamp).forEach(node => {
+            const block = document.createElement("div");
+            block.className = "comment-node-card";
+            block.style.background = "rgba(255,255,255,0.02)";
+            block.style.border = "1px solid rgba(255,255,255,0.04)";
+            block.style.borderRadius = "8px";
+            block.style.padding = "14px";
+            block.style.marginBottom = "12px";
+            block.innerHTML = `
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px; font-size:0.85rem;">
+                    <span style="font-weight:500; color:#7d8f7a;">${escapeHtml(node.author)}</span>
+                </div>
+                <p style="margin:0; font-size:0.9rem; line-height:1.4; color:rgba(255,255,255,0.75); word-break:break-word;">${escapeHtml(node.text)}</p>
+            `;
+            commentsContainer.appendChild(block);
+        });
+    });
+}
+
+initGallerySystem();
+initPoemSystem();
+
+function triggerToastNotification(msg) {
+    const box = document.getElementById("toast-container");
+    if (!box) return;
+    const toast = document.createElement("div");
+    toast.className = "toast";
+    toast.innerText = msg;
+    box.appendChild(toast);
+    setTimeout(() => toast.remove(), 3500);
+}
+
+function escapeHtml(str) {
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}

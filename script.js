@@ -117,60 +117,112 @@ window.addEventListener("scroll", () => {
 
     slides.forEach(slide => {
         /* FIXED: We use translateY for vertical shifting but omit the explicit inline scale() declaration.
-           This allows your continuous CSS `@keyframes slowZoom` scale parameters to run completely uninterrupted.
+           This allows your continuous CSS @keyframes slowZoom scale parameters to run completely uninterrupted.
         */
         slide.style.transform = `translateY(${scrollY * 0.08}px)`;
     });
 });
 
 
-// =========================
-// GALLERY LIGHTBOX (INTEGRATED TARGET ROUTER)
-// =========================
-const galleryImages = document.querySelectorAll(".masonry-gallery img");
-const lightbox = document.querySelector(".lightbox");
-const lightboxImage = document.querySelector(".lightbox-image");
-const closeLightbox = document.querySelector(".close-lightbox");
+// ==========================================================================
+// GALLERY LIGHTBOX INTERACTIVE PANEL DISPLAY ENGINE WITH SLIDE CONTROLS
+// ==========================================================================
+const galleryCards = document.querySelectorAll(".masonry-gallery .gallery-card img");
+const lightboxElement = document.querySelector(".lightbox");
+const lightboxImageContainer = document.querySelector(".lightbox-image");
+const closeLightboxWidget = document.querySelector(".close-lightbox");
+const prevBtn = document.getElementById("galleryPrevBtn");
+const nextBtn = document.getElementById("galleryNextBtn");
 
-// Global dynamic target container used by the review listener engine
 window.currentImageTargetId = null;
+let activeImageIndex = -1;
 
-galleryImages.forEach(image => {
+// Core renderer function to update the viewport image frame and reload comments
+function updateLightboxView(index) {
+    if (index < 0 || index >= galleryCards.length) return;
+    
+    activeImageIndex = index;
+    const activeImgSrc = galleryCards[activeImageIndex].src;
+    
+    // 1. Swap image source element
+    if (lightboxImageContainer) {
+        lightboxImageContainer.src = activeImgSrc;
+    }
+    
+    // 2. Extract precise file context target ID and STRIP OUT Forbidden Characters like Dots!
+    const filename = activeImgSrc.split("/").pop(); // Gets "i1.jpg"
+    
+    // CRITICAL HOTFIX: Replaces the dot (".") with nothing so Firebase accepts the key safely
+    const cleanFilename = filename.replace(/\./g, ""); // Converts "i1.jpg" into "i1jpg"
+    window.currentImageTargetId = "image-" + cleanFilename.replace(/[^a-zA-Z0-9.\-_]/g, "");
+    
+    // 3. Fire custom event routine so reviews.js syncs data instantly
+    window.dispatchEvent(new CustomEvent("lightboxOpened"));
+}
+
+// Attach listener index slots to initial grid items
+galleryCards.forEach((image, index) => {
     image.addEventListener("click", () => {
-        if (!lightbox || !lightboxImage) return;
-
-        // 1. Set image asset frame view
-        lightboxImage.src = image.src;
-
-        // 2. Extract specific image filename (e.g., "capture3.jpg")
-        const filename = image.src.split("/").pop();
-        window.currentImageTargetId = "image-" + filename;
-
-        // 3. Show the interactive modal window
-        lightbox.classList.add("active");
-
-        // 4. Trigger the review script to hot-reload comments for this file
-        window.dispatchEvent(new CustomEvent("lightboxOpened"));
+        if (!lightboxElement || !lightboxImageContainer) return;
+        
+        // Render view target framework
+        updateLightboxView(index);
+        lightboxElement.classList.add("active");
     });
 });
 
-if (closeLightbox) {
-    closeLightbox.addEventListener("click", () => {
-        lightbox.classList.remove("active");
+// Structural navigation trigger callbacks
+function navigateLightboxNext() {
+    if (!lightboxElement || !lightboxElement.classList.contains("active")) return;
+    let nextIndex = activeImageIndex + 1;
+    if (nextIndex >= galleryCards.length) nextIndex = 0; 
+    updateLightboxView(nextIndex);
+}
+
+function navigateLightboxPrev() {
+    if (!lightboxElement || !lightboxElement.classList.contains("active")) return;
+    let prevIndex = activeImageIndex - 1;
+    if (prevIndex < 0) prevIndex = galleryCards.length - 1; 
+    updateLightboxView(prevIndex);
+}
+
+// On-screen arrows click triggers
+if (nextBtn) nextBtn.addEventListener("click", navigateLightboxNext);
+if (prevBtn) prevBtn.addEventListener("click", navigateLightboxPrev);
+
+// KEYBOARD KEY ACTIONS LISTENER OVERRIDES (Left, Right, and Escape Keys)
+document.addEventListener("keydown", (e) => {
+    if (!lightboxElement || !lightboxElement.classList.contains("active")) return;
+    
+    // Ignore key presses if the user is typing a comment inside the form fields
+    if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") return;
+
+    if (e.key === "ArrowRight") {
+        navigateLightboxNext();
+    } else if (e.key === "ArrowLeft") {
+        navigateLightboxPrev();
+    } else if (e.key === "Escape") {
+        lightboxElement.classList.remove("active");
+        window.currentImageTargetId = null;
+    }
+});
+
+// Close UI mechanisms
+if (closeLightboxWidget) {
+    closeLightboxWidget.addEventListener("click", () => {
+        if (lightboxElement) lightboxElement.classList.remove("active");
         window.currentImageTargetId = null;
     });
 }
 
-if (lightbox) {
-    lightbox.addEventListener("click", (e) => {
-        // Prevent click events inside the main content window from shutting down the session prematurely
-        if (e.target === lightbox) {
-            lightbox.classList.remove("active");
+if (lightboxElement) {
+    lightboxElement.addEventListener("click", (e) => {
+        if (e.target === lightboxElement || e.target.classList.contains("lightbox-art-pane")) {
+            lightboxElement.classList.remove("active");
             window.currentImageTargetId = null;
         }
     });
 }
-
 
 // =========================
 // SCROLL PROGRESS BAR

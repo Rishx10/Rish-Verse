@@ -1,182 +1,444 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gallery • Rish Verse</title>
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-    <link rel="icon"
-          type="image/png"
-          href="images/favicon.png">
+    <style>
+        /* GALLERY RE-DESIGN OVERRIDES */
+        body {
+            background: #050505 !important;
+            margin: 0;
+            padding: 0;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+        }
+        .gallery-wrapper {
+            padding: 140px 40px 80px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+        .gallery-intro {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        .gallery-intro span {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #7d8f7a;
+            font-weight: 500;
+        }
+        .gallery-intro h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3.5rem;
+            font-weight: 300;
+            margin: 15px 0 0;
+            color: #f5f5f5;
+            line-height: 1.2;
+        }
 
-    <link rel="stylesheet"
-          href="style.css">
+        /* PREMIUM UNIFORM COHESIVE GRID MAP */
+        .masonry-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 30px;
+            width: 100%;
+        }
+        .gallery-card {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #0f0f0f;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            cursor: pointer;
+            aspect-ratio: 4 / 3;
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), border-color 0.4s ease;
+        }
+        .gallery-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        
+        /* HOVER INTERACTIONS */
+        .gallery-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+        .gallery-card:hover img {
+            transform: scale(1.04);
+        }
 
+        /* PREMIUM DUAL SPLIT PANEL LIGHTBOX SYSTEM */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(3, 3, 3, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 10000;
+            display: flex;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        .lightbox.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* CLOSE WINDOW MACRO */
+        .close-lightbox {
+            position: absolute;
+            top: 25px;
+            right: 30px;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 10010;
+            transition: color 0.2s, transform 0.2s;
+        }
+        .close-lightbox:hover {
+            color: #ffffff;
+            transform: scale(1.1);
+        }
+
+        .lightbox-split-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* LEFT SIDE PANEL: FULL HIGH RESOLUTION VISUAL ENVIRONMENT */
+        .lightbox-art-pane {
+            flex: 1.4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: #020202;
+            position: relative;
+        }
+        .lightbox-image {
+            max-width: 90%;
+            max-height: 85vh;
+            object-fit: contain;
+            border-radius: 6px;
+            box-shadow: 0 30px 70px rgba(0,0,0,0.9);
+        }
+
+        /* INSTAGRAM-STYLE NAVIGATION ARROWS STYLING */
+        .lightbox-nav-btn {
+            position: absolute !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            background: rgba(15, 15, 15, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            color: rgba(255, 255, 255, 0.6) !important;
+            font-size: 1.3rem !important;
+            width: 50px !important;
+            height: 50px !important;
+            border-radius: 50% !important;
+            cursor: pointer !important;
+            z-index: 10005 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+            backdrop-filter: blur(8px) !important;
+            -webkit-backdrop-filter: blur(8px) !important;
+        }
+        .lightbox-nav-btn:hover {
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: #ffffff !important;
+            border-color: rgba(255, 255, 255, 0.25) !important;
+            transform: translateY(-50%) scale(1.04) !important;
+        }
+        .prev-btn { left: 25px !important; }
+        .next-btn { right: 25px !important; }
+
+        /* RIGHT SIDE PANEL: SLEEK, INTERACTIVE SOCIAL FEED */
+        .lightbox-social-pane {
+            flex: 1;
+            background: #0a0a0a;
+            border-left: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            padding: 45px 40px;
+            box-sizing: border-box;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* LIKE ACTIONS AREA */
+        .social-engagement-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 25px;
+            margin-bottom: 25px;
+        }
+        .like-action-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .like-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.7);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .like-btn:hover {
+            background: rgba(218, 62, 62, 0.1);
+            border-color: rgba(218, 62, 62, 0.3);
+            color: #da3e3e;
+            transform: scale(1.05);
+        }
+        .like-btn.liked {
+            background: #da3e3e !important;
+            border-color: #da3e3e !important;
+            color: #ffffff !important;
+            text-shadow: 0 0 10px rgba(255,255,255,0.4);
+        }
+        .like-counter-text {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 400;
+        }
+        .like-counter-text strong {
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        /* SCROLLABLE COMMENTS FEED LIST MAP */
+        .comments-feed-scroll {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 25px;
+            padding-right: 5px;
+        }
+        .comments-feed-scroll::-webkit-scrollbar { width: 4px; }
+        .comments-feed-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+
+        /* FEEDBACK CAPTURE CORE SUBMIT FORM INTERFACE */
+        .social-submit-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 25px;
+        }
+        .gallery-input-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .gallery-input-form input,
+        .gallery-input-form textarea {
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.06) !important;
+            border-radius: 8px !important;
+            color: #ffffff !important;
+            padding: 14px 16px !important;
+            font-size: 0.9rem !important;
+            font-family: 'Inter', sans-serif !important;
+            outline: none !important;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease;
+        }
+        .gallery-input-form input:focus,
+        .gallery-input-form textarea:focus {
+            border-color: rgba(255, 255, 255, 0.2) !important;
+        }
+        .gallery-input-form textarea {
+            height: 80px;
+            resize: none;
+        }
+        .gallery-submit-btn {
+            background: #ffffff !important;
+            color: #050505 !important;
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 14px !important;
+            font-size: 0.85rem !important;
+            font-weight: 600 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1px !important;
+            cursor: pointer !important;
+            transition: opacity 0.2s ease, transform 0.1s ease !important;
+        }
+        .gallery-submit-btn:hover { opacity: 0.9; }
+        .gallery-submit-btn:active { transform: scale(0.99); }
+
+        /* TOAST FLOATING PANEL NOTIFICATION ARRAYS */
+        #toast-container {
+            position: fixed;
+            top: 12%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 11000;
+            pointer-events: none;
+        }
+        .toast {
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        /* VIEWPORT TARGET RESPONSIVE ADAPTATIONS */
+        @media (max-width: 960px) {
+            .lightbox-split-container { flex-direction: column; }
+            .lightbox-art-pane { flex: none; height: 50vh; padding: 20px; }
+            .lightbox-social-pane { flex: 1; padding: 30px; }
+            .lightbox-image { max-height: 42vh; }
+            .lightbox-nav-btn { width: 42px !important; height: 42px !important; font-size: 1.1rem !important; top: 50% !important; }
+            .prev-btn { left: 15px !important; }
+            .next-btn { right: 15px !important; }
+        }
+        @media (max-width: 500px) {
+            .gallery-wrapper { padding: 120px 20px 60px; }
+            .masonry-gallery { grid-template-columns: 1fr; }
+            .gallery-intro h1 { font-size: 2.4rem; }
+        }
+    </style>
 </head>
-
 <body>
+
+    <div id="toast-container"></div>
     <div class="progress-bar"></div>
     <div class="page-transition"></div>
 
-
-    <!-- NAVBAR -->
-
     <header>
-
         <nav>
-
             <div class="logo-section">
-
-                <a href="index.html"
-                   class="brand-link">
-
+                <a href="index.html" class="brand-link">
                     <div class="brand">
-
-                        <img src="images/logo.png"
-                             class="nav-logo">
-
+                        <img src="images/logo.png" class="nav-logo" alt="Logo">
                         <div>
-
                             <h1>Rish Verse</h1>
-
-                            <p class="tagline">
-                                Bring Creativity to life
-                            </p>
-
+                            <p class="tagline">Bring Creativity to life</p>
                         </div>
-
                     </div>
-
                 </a>
-
             </div>
-
-
             <ul class="nav-links">
-
                 <li><a href="index.html">Home</a></li>
-
                 <li><a href="gallery.html">Gallery</a></li>
-
                 <li><a href="poems.html">Poems</a></li>
-
                 <li><a href="thecrypt.html">The Crypt</a></li>
-
             </ul>
-
         </nav>
-
     </header>
 
-
-
-    <!-- GALLERY HERO -->
-
-    <section class="gallery-hero">
-
-        <div class="gallery-overlay"></div>
-
-        <div class="gallery-hero-content">
-
-            <p>
-                Wildlife • Landscapes • Atmosphere
-            </p>
-
-            <h2>
-                Fragments of silence,<br>
-                captured through motion.
-            </h2>
-
+    <main class="gallery-wrapper">
+        <div class="gallery-intro">
+            <span>Wildlife • Landscapes • Atmosphere</span>
+            <h1>Fragments of silence,<br>captured through motion.</h1>
         </div>
-
-    </section>
-
-
-
-    <!-- GALLERY SECTION -->
-
-    <section class="gallery-section">
 
         <div class="masonry-gallery">
-
-            <img src="images/i1.jpg" alt="">
-            <img src="images/i2.jpg" alt="">
-            <img src="images/i3.jpg" alt="">
-            <img src="images/i4.jpg" alt="">
-            <img src="images/i5.jpg" alt="">
-            <img src="images/i6.jpg" alt="">
-            <img src="images/i7.jpg" alt="">
-            <img src="images/i8.jpg" alt="">
-            <img src="images/i9.jpg" alt="">
-            <img src="images/i10.jpg" alt="">
-            <img src="images/i11.jpg" alt="">
-            <img src="images/i12.jpg" alt="">
-            <img src="images/i13.jpg" alt="">
-            <img src="images/i14.jpg" alt="">
-            <img src="images/i15.jpg" alt="">
-            <img src="images/i16.jpg" alt="">
-            <img src="images/i17.jpg" alt="">
-            <img src="images/i18.jpg" alt="">
-            <img src="images/i19.jpg" alt="">
-            <img src="images/i20.jpg" alt="">
-            <img src="images/i21.jpg" alt="">
-            <img src="images/i22.jpg" alt="">
-            <img src="images/i23.jpg" alt="">
-            <img src="images/i24.jpg" alt="">
-            <img src="images/i25.jpg" alt="">
-
+            <div class="gallery-card"><img src="images/i1.jpg" alt="Photography Exhibit"></div>
+            <div class="gallery-card"><img src="images/i2.jpg" alt="Photography Exhibit"></div>
+            <div class="gallery-card"><img src="images/i3.jpg" alt="Photography Exhibit"></div>
+            <div class="gallery-card"><img src="images/i4.jpg" alt="Photography Exhibit"></div>
+            <div class="gallery-card"><img src="images/i5.jpg" alt="Photography Exhibit"></div>
+            <div class="gallery-card"><img src="images/i6.jpg" alt="Photography Exhibit"></div>
+            <div class="gallery-card"><img src="images/i7.jpg" alt="Photography Exhibit"></div>
+            <div class="gallery-card"><img src="images/i8.jpg" alt="Photography Exhibit"></div>
+            <div class="gallery-card"><img src="images/i9.jpg" alt="Photography Exhibit"></div>
+            <div class="gallery-card"><img src="images/i10.jpg" alt="Photography Exhibit"></div>
+            <div class="gallery-card"><img src="images/i11.jpg" alt="Photography Exhibit"></div>
+            <div class="gallery-card"><img src="images/i12.jpg" alt="Photography Exhibit"></div>
+            <div class="gallery-card"><img src="images/i13.jpg" alt="Photography Exhibit"></div>
+            <div class="gallery-card"><img src="images/i14.jpg" alt="Photography Exhibit"></div>
+            <div class="gallery-card"><img src="images/i15.jpg" alt="Photography Exhibit"></div>
+            <div class="gallery-card"><img src="images/i16.jpg" alt="Photography Exhibit"></div>
+            <div class="gallery-card"><img src="images/i17.jpg" alt="Photography Exhibit"></div>
+            <div class="gallery-card"><img src="images/i18.jpg" alt="Photography Exhibit"></div>
+            <div class="gallery-card"><img src="images/i19.jpg" alt="Photography Exhibit"></div>
+            <div class="gallery-card"><img src="images/i20.jpg" alt="Photography Exhibit"></div>
+            <div class="gallery-card"><img src="images/i21.jpg" alt="Photography Exhibit"></div>
+            <div class="gallery-card"><img src="images/i22.jpg" alt="Photography Exhibit"></div>
+            <div class="gallery-card"><img src="images/i23.jpg" alt="Photography Exhibit"></div>
+            <div class="gallery-card"><img src="images/i24.jpg" alt="Photography Exhibit"></div>
+            <div class="gallery-card"><img src="images/i25.jpg" alt="Photography Exhibit"></div>
         </div>
+    </main>
 
-    </section>
+    <div class="lightbox">
+        <button class="close-lightbox">&times;</button>
+        <div class="lightbox-split-container">
+            
+            <div class="lightbox-art-pane">
+                <button class="lightbox-nav-btn prev-btn" id="galleryPrevBtn">&#10094;</button>
+                <img src="" class="lightbox-image" alt="Expanded Master Frame View">
+                <button class="lightbox-nav-btn next-btn" id="galleryNextBtn">&#10095;</button>
+            </div>
 
-
-
-    <!-- LIGHTBOX -->
-
-   <div class="lightbox">
-    <span class="close-lightbox">&times;</span>
-    
-    <div class="lightbox-wrapper">
-        <div class="lightbox-media-side">
-            <img class="lightbox-image" src="" alt="Cinematic Frame">
-        </div>
-        
-        <div class="lightbox-interactive-side">
-            <div class="review-container modal-reviews">
-                <h2>Frame Echo</h2>
-                <p class="review-subtext">Leave a thought on this specific capture.</p>
-
-                <div class="star-rating modal-stars">
-                    <span data-rating="1">★</span>
-                    <span data-rating="2">★</span>
-                    <span data-rating="3">★</span>
-                    <span data-rating="4">★</span>
-                    <span data-rating="5">★</span>
+            <div class="lightbox-social-pane">
+                
+                <div class="social-engagement-header">
+                    <div class="like-action-wrapper">
+                        <button class="like-btn" id="galleryLikeBtn" data-count="0">♥</button>
+                        <div class="like-counter-text">
+                            Liked by <strong id="likeCountLabel">0</strong> people
+                        </div>
+                    </div>
                 </div>
 
-                <form id="reviewForm" class="modal-form">
-                    <input type="text" id="reviewName" placeholder="Your name (optional)">
-                    <textarea id="reviewText" placeholder="Share your perspective..." required></textarea>
-                    <button type="submit">Submit Echo</button>
-                </form>
+                <div class="comments-feed-scroll" id="galleryCommentsBox">
+                    </div>
 
-                <div id="reviewsContainer" class="modal-feed"></div>
+                <div class="social-submit-footer">
+                    <form id="galleryReviewForm" class="gallery-input-form">
+                        <input type="text" id="galleryNameField" placeholder="Your name (optional)">
+                        <textarea id="galleryTextField" placeholder="Add a comment..." required></textarea>
+                        <button type="submit" class="gallery-submit-btn">Post Comment</button>
+                    </form>
+                </div>
+
             </div>
         </div>
     </div>
-  </div>
 
-  <script>
-    window.addEventListener("pageshow", function (event) {
-        if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
-            window.location.reload();
-        }
-    });
-</script>
+    <footer>
+        <p>© 2026 Rish Verse • Crafted by Rish</p>
+    </footer>
 
+    <script src="script.js"></script>
+    <script type="module" src="reviews.js"></script>
+    <script>
+        window.addEventListener("pageshow", (e) => {
+            if (e.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                window.location.reload();
+            }
+        });
+    </script>
+</body>
 </html>
