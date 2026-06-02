@@ -6,126 +6,34 @@
     <title>The Crypt • Rish Verse</title>
     <link rel="icon" type="image/png" href="images/favicon.png">
     <link rel="stylesheet" href="style.css">
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* STANDALONE LAYOUT ENVIRONMENT */
-        body {
-            background: #050505 !important;
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-            color: #ffffff;
-            font-family: 'Inter', sans-serif;
-        }
-        .game-wrapper {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            padding: 120px 20px 60px;
-            box-sizing: border-box;
-            position: relative;
-        }
-        .game-header-area {
-            position: relative;
-            margin-bottom: 40px;
-            text-align: center;
-            width: 100%;
-        }
-        .game-title {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 3.5rem;
-            margin: 0 0 5px 0;
-            letter-spacing: 1px;
-            color: #ffffff !important;
-        }
-        .game-sub {
-            color: #7d8f7a !important;
-            font-size: 0.9rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin: 0;
-        }
-        
-        /* HELP BUTTON */
-        .help-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #7d8f7a;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-top: 15px;
-            transition: all 0.3s ease;
-        }
-        .help-btn:hover {
-            background: rgba(125, 143, 122, 0.2);
-            border-color: #7d8f7a;
-            color: #fff;
-        }
-
-        /* NEW: DESKTOP TWO-COLUMN SPLIT CONTAINER SYSTEM */
-        .game-container-split {
-            display: flex;
-            flex-direction: row;
-            align-items: flex-start;
-            justify-content: center;
-            gap: 50px;
-            width: 100%;
-            max-width: 1100px;
-            margin: 0 auto;
-            box-sizing: border-box;
-        }
-
-        /* LEFT HALF: THE GRID */
-        .split-left-grid {
-            flex: 1;
-            display: flex;
-            justify-content: flex-end; /* Keeps it balanced looking toward the center */
-        }
-        
-        /* RIGHT HALF: HINTS & CONTROLS DASHBOARD */
-        .split-right-dashboard {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start; /* Clean left alignment for dashboard view */
-            justify-content: flex-start;
-        }
-        
-        /* GRID LAYOUT CONFIG */
+        /* EXTRA EMBEDDED MECHANICS SPECIFIC TO THE CRYPT CORE GRID ONLY */
         #wordle-grid {
             display: grid !important;
             grid-template-rows: repeat(6, 1fr) !important;
-            gap: 10px !important;
+            gap: 12px !important;
             width: max-content !important;
-            cursor: pointer;
         }
         .grid-row {
             display: grid !important;
             grid-template-columns: repeat(5, 1fr) !important;
-            gap: 10px !important;
+            gap: 12px !important;
             width: max-content !important;
         }
         .tile {
-            width: 60px;
-            height: 60px;
-            border: 1px solid rgba(255, 255, 255, 0.15) !important;
-            background: rgba(255, 255, 255, 0.02) !important;
-            border-radius: 8px;
+            width: 56px;
+            height: 56px;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            background: rgba(255, 255, 255, 0.01) !important;
+            border-radius: 0px !important; /* Sharp, modern layout edge */
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.6rem;
-            font-weight: 600;
+            font-size: 1.5rem;
+            font-weight: 500;
             text-transform: uppercase;
             color: #ffffff !important;
             user-select: none;
@@ -133,111 +41,20 @@
             box-sizing: border-box;
             transition: transform 0.1s ease, border-color 0.1s ease;
         }
-        
-        /* POP & FLIP ANIMATION EFFECTS */
         .tile.pop {
-            transform: scale(1.08);
-            border-color: rgba(255, 255, 255, 0.45) !important;
+            transform: scale(1.05);
+            border-color: rgba(255, 255, 255, 0.3) !important;
         }
-        .tile.flip {
-            transform: rotateX(90deg);
-            transition: transform 0.25s ease-in;
-        }
-        .tile.reveal {
-            transform: rotateX(0deg);
-            transition: transform 0.25s ease-out;
-        }
+        .tile.flip { transform: rotateX(90deg); transition: transform 0.22s ease-in; }
+        .tile.reveal { transform: rotateX(0deg); transition: transform 0.22s ease-out; }
 
-        /* LIVE VISUAL CLUE COLOR MAPS FOR FLIPPED TILES */
-        .tile[style*="background: rgb(125, 143, 122)"],
-        .tile[style*="background: #7d8f7a"] {
-            background-color: #7d8f7a !important;
-            border-color: #7d8f7a !important;
-            color: #ffffff !important;
-        }
-        .tile[style*="background: rgb(173, 147, 99)"],
-        .tile[style*="background: #ad9363"] {
-            background-color: #ad9363 !important;
-            border-color: #ad9363 !important;
-            color: #ffffff !important;
-        }
-        .tile[style*="background: rgb(37, 37, 37)"],
-        .tile[style*="background: #252525"] {
-            background-color: #252525 !important;
-            border-color: #252525 !important;
-            color: rgba(255, 255, 255, 0.4) !important;
-        }
-
-        /* DYNAMIC HINT BOX WRAPPER */
-        #hint-display-box {
-            width: 100%;
-            max-width: 500px;
-            min-height: 56px;
-            background: rgba(255, 255, 255, 0.01);
-            border: 1px dashed rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 12px 20px;
-            box-sizing: border-box;
-            transition: all 0.4s ease;
-        }
-        #hint-display-box.active {
-            background: rgba(173, 147, 99, 0.03);
-            border: 1px solid rgba(173, 147, 99, 0.15);
-        }
-        #hint-text {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.4);
-            font-style: italic;
-            text-align: center;
-            line-height: 1.5;
-            margin: 0;
-            transition: opacity 0.2s ease;
-        }
-        #hint-text.reveal-mode {
-            color: #ad9363;
-            font-weight: 400;
-        }
-
-        /* INTERACTIVE SYSTEM HINT CONTROLLER BUTTON */
-        .hint-trigger-btn {
-            background: rgba(173, 147, 99, 0.08);
-            border: 1px solid rgba(173, 147, 99, 0.2);
-            color: #ad9363;
-            padding: 10px 24px;
-            font-size: 0.8rem;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            font-weight: 600;
-            border-radius: 20px;
-            cursor: pointer;
-            margin-bottom: 30px;
-            transition: all 0.3s ease;
-        }
-        .hint-trigger-btn:hover:not(:disabled) {
-            background: rgba(173, 147, 99, 0.15);
-            border-color: #ad9363;
-            transform: translateY(-1px);
-        }
-        .hint-trigger-btn:disabled {
-            background: rgba(255, 255, 255, 0.03);
-            border-color: rgba(255, 255, 255, 0.05);
-            color: rgba(255, 255, 255, 0.2);
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* KEYBOARD WRAPPER CONFIG */
+        /* KEYBOARD CONTAINER INJECTION */
         #keyboard-container {
             width: 100% !important;
-            max-width: 500px !important;
+            max-width: 480px !important;
             display: flex !important;
             flex-direction: column !important;
             gap: 8px !important;
-            box-sizing: border-box !important;
         }
         .keyboard-row {
             display: flex !important;
@@ -246,48 +63,29 @@
             width: 100% !important;
         }
         .key {
-            background: rgba(255, 255, 255, 0.06) !important;
-            border: 1px solid rgba(255, 255, 255, 0.03) !important;
-            color: rgba(255, 255, 255, 0.9) !important;
-            padding: 16px 8px;
-            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.03) !important;
+            border: 1px solid rgba(255, 255, 255, 0.04) !important;
+            color: rgba(255, 255, 255, 0.8) !important;
+            padding: 14px 4px;
+            border-radius: 0px !important;
             cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 500;
+            font-size: 0.8rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
             flex: 1;
             text-transform: uppercase;
-            transition: background 0.2s, color 0.2s;
+            transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
-        .key.large {
-            flex: 1.8;
-            font-size: 0.7rem;
-            letter-spacing: 0.5px;
-        }
-        .key:hover {
-            background: rgba(255, 255, 255, 0.15) !important;
-            color: #ffffff !important;
-        }
+        .key.large { flex: 1.8; font-size: 0.7rem; letter-spacing: 0.5px; }
+        .key:hover { background: #ffffff !important; color: #030303 !important; border-color: #ffffff !important; }
 
-        /* HIDDEN KEYBOARD INTERCEPTOR FOR MOBILE DEVICE COMPATIBILITY */
-        #mobile-keyboard-trigger {
-            position: absolute;
-            top: -1000px;
-            left: -1000px;
-            opacity: 0;
-            width: 1px;
-            height: 1px;
-        }
-
-        /* RULES MODAL POPUP DIALOG */
+        /* THE RULES DIALOG OVERLAY SYSTEM */
         .modal-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            inset: 0;
+            background: rgba(3, 3, 3, 0.96);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             z-index: 10000;
             display: flex;
             align-items: center;
@@ -296,249 +94,130 @@
             pointer-events: none;
             transition: opacity 0.4s ease;
         }
-        .modal-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
         .modal-card {
-            background: #0f0f0f;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 35px;
+            background: #060606;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 40px;
             width: 90%;
-            max-width: 460px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-            transform: scale(0.9);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 480px;
+            transform: scale(0.97);
+            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
-        .modal-overlay.active .modal-card {
-            transform: scale(1);
-        }
+        .modal-overlay.active .modal-card { transform: scale(1); }
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding-bottom: 10px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            padding-bottom: 15px;
         }
-        .modal-header h2 {
-            font-family: 'Cormorant Garamond', serif;
-            font-size: 2.2rem;
-            margin: 0;
-            color: #fff;
-        }
-        .close-modal {
-            background: none;
-            border: none;
-            color: rgba(255,255,255,0.4);
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
+        .modal-header h2 { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 400; margin: 0; }
+        .close-modal { background: none; border: none; color: rgba(255,255,255,0.3); font-size: 1.8rem; cursor: pointer; transition: color 0.2s; }
         .close-modal:hover { color: #fff; }
-        
-        .rules-content p {
-            font-size: 0.95rem;
-            line-height: 1.6;
-            color: rgba(255, 255, 255, 0.7);
-            margin: 0 0 20px 0;
-        }
-        .example-container {
-            margin-top: 25px;
-        }
-        .example-title {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #7d8f7a;
-            margin-bottom: 12px;
-        }
-        .ex-row {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 8px;
-            align-items: center;
-        }
-        .ex-tile {
-            width: 36px;
-            height: 36px;
-            border-radius: 4px;
-            border: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-        .ex-txt {
-            font-size: 0.85rem;
-            color: rgba(255,255,255,0.6);
-            margin-left: 5px;
-        }
-
-        /* PREMIUM FLOATING TOASTS */
-        #toast-container {
-            position: fixed;
-            top: 12%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            pointer-events: none;
-        }
-        .toast {
-            background: rgba(20, 20, 20, 0.95) !important;
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #fff !important;
-            padding: 14px 26px;
-            border-radius: 30px;
-            font-size: 0.9rem;
-            letter-spacing: 0.5px;
-            box-shadow: 0 10px 35px rgba(0,0,0,0.7);
-            opacity: 0;
-            transform: translateY(-20px) scale(0.9);
-            animation: toastFadeIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            text-align: center;
-        }
-        @keyframes toastFadeIn {
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        /* MEDIA QUERIES: RESPONSIVE FALLBACKS FOR LAPTOPS & TABLETS */
-        @media (max-width: 900px) {
-            .game-container-split {
-                flex-direction: column;
-                align-items: center;
-                gap: 30px;
-            }
-            .split-left-grid, .split-right-dashboard {
-                justify-content: center;
-                align-items: center;
-                width: 100%;
-                flex: none;
-            }
-            .hint-trigger-btn {
-                margin: 0 auto 25px auto;
-                display: block;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .tile { width: 46px; height: 46px; font-size: 1.2rem; border-radius: 6px; }
-            .game-title { font-size: 2.5rem; }
-            .modal-card { padding: 20px; }
-            #hint-display-box { max-width: 100%; }
-            
-            /* COMPATIBILITY INTERCEPT: HIDE VIRTUAL PANEL SO MOBILE NATIVE KEYPAD LOADS CLEANLY */
-            #keyboard-container {
-                display: none !important;
-            }
-        }
+        .rules-content p { font-size: 0.9rem; line-height: 1.7; color: #8c8c8c; margin-bottom: 20px; font-weight: 200; }
     </style>
 </head>
 <body>
     
     <div id="toast-container"></div>
+    <div class="progress-bar"></div>
+    <div class="page-transition"></div>
 
     <input type="text" id="mobile-keyboard-trigger" autocomplete="off" autocapitalize="none" inputmode="text">
 
     <div class="modal-overlay" id="rules-modal">
         <div class="modal-card">
             <div class="modal-header">
-                <h2>Crypt Rules</h2>
+                <h2>Crypt Decryption Rules</h2>
                 <button class="close-modal" id="close-rules">&times;</button>
             </div>
             <div class="rules-content">
-                <p>Decipher the hidden 5-letter poetry fragment in 6 attempts. Each guess must be a valid 5-letter word.</p>
-                <p>After each submission, the tiles will shift colors to reveal how close your alignment is to the verse:</p>
+                <p>Decipher the hidden 5-letter poetry fragment in 6 attempts. Every alignment guess entry must correspond to a verified 5-letter term.</p>
+                <p>Upon validation submission, the structural tiles will pivot color frequencies to map your distance from the solution:</p>
                 
                 <div class="example-container">
-                    <div class="example-title">Visual Clues</div>
-                    
-                    <div class="ex-row">
-                        <div class="ex-tile" style="background:#7d8f7a; border-color:#7d8f7a;">W</div>
-                        <span class="ex-txt"><strong>Sage Green:</strong> Perfect. Letter is correct and in the right spot.</span>
+                    <div class="example-title">Visual Clue Matrix</div>
+                    <div class="ex-row" style="display:flex; align-items:center; gap:15px; margin-bottom:12px;">
+                        <div class="ex-tile" style="width:32px; height:32px; background:#7d8f7a; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:0.9rem;">W</div>
+                        <span class="ex-txt" style="font-size:0.85rem; color:#8c8c8c;"><strong style="color:white;">Sage Green:</strong> Correct alignment. Key matches its index.</span>
                     </div>
-                    
-                    <div class="ex-row">
-                        <div class="ex-tile" style="background:#ad9363; border-color:#ad9363;">O</div>
-                        <span class="ex-txt"><strong>Muted Gold:</strong> Misplaced. In the word, but wrong spot.</span>
+                    <div class="ex-row" style="display:flex; align-items:center; gap:15px; margin-bottom:12px;">
+                        <div class="ex-tile" style="width:32px; height:32px; background:#ad9363; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:0.9rem;">O</div>
+                        <span class="ex-txt" style="font-size:0.85rem; color:#8c8c8c;"><strong style="color:white;">Muted Gold:</strong> Misplaced trace. Present in term, different area.</span>
                     </div>
-                    
-                    <div class="ex-row">
-                        <div class="ex-tile" style="background:#252525; border-color:#252525;">R</div>
-                        <span class="ex-txt"><strong>Charcoal:</strong> Missing. Not in the secret word at all.</span>
+                    <div class="ex-row" style="display:flex; align-items:center; gap:15px; margin-bottom:12px;">
+                        <div class="ex-tile" style="width:32px; height:32px; background:#252525; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:0.9rem;">R</div>
+                        <span class="ex-txt" style="font-size:0.85rem; color:#8c8c8c;"><strong style="color:white;">Charcoal:</strong> Missing component. Excluded entirely from target.</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <header>
-        <nav>
-            <div class="logo-section">
-                <a href="index.html" class="brand-link">
-                    <div class="brand">
-                        <img src="images/logo.png" class="nav-logo" alt="Logo">
-                        <div>
-                            <h1>Rish Verse</h1>
-                            <p class="tagline">Bring Creativity to life</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="gallery.html">Gallery</a></li>
-                <li><a href="poems.html">Poems</a></li>
-                <li><a href="thecrypt.html">The Crypt</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <main class="game-wrapper">
-        <div class="game-header-area">
-            <h1 class="game-title">The Crypt</h1>
-            <p class="game-sub">Decipher the fading poetry fragments</p>
-            <button class="help-btn" id="open-rules" title="How to Play">?</button>
+    <aside class="side-panel">
+        <div class="panel-header">
+            <a href="index.html" class="brand-link">
+                <img src="images/logo.png" class="nav-logo" alt="Rish Verse Logo">
+                <h1>Rish Verse</h1>
+            </a>
+            <p class="tagline">Bring Creativity to life</p>
         </div>
 
-        <div class="game-container-split">
-            
-            <div class="split-left-grid">
-                <div id="wordle-grid"></div>
-            </div>
-            
-            <div class="split-right-dashboard">
-                <div id="hint-display-box">
-                    <p id="hint-text">The crypt box hums silently... seek clues below if you lose your way.</p>
-                </div>
-                <button class="hint-trigger-btn" id="hint-btn">Unlock Hint (3 Left)</button>
+        <nav class="vertical-nav">
+            <ul class="nav-links">
+                <li><a href="index.html" data-num="01">Home</a></li>
+                <li><a href="gallery.html" data-num="02">Gallery</a></li>
+                <li><a href="poems.html" data-num="03">Poems</a></li>
+                <li><a href="thecrypt.html" class="active" data-num="04">The Crypt</a></li>
+            </ul>
+        </nav>
 
-                <div id="keyboard-container"></div>
+        <div class="panel-footer">
+            <p>© 2026 Archive</p>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        
+        <div class="game-wrapper" style="padding: 100px 10% 60px; min-height:100vh; display:flex; flex-direction:column; justify-content:space-between;">
+            
+            <header class="game-header-area" style="margin-bottom: 50px; position:relative;">
+                <p class="section-meta">Module / Logic Engine</p>
+                <h1 class="game-title" style="font-family: var(--font-serif); font-size: 3.8rem; font-weight: 300; color: white; margin: 10px 0 15px;">The Crypt</h1>
+                <p class="game-subtitle" style="color: var(--text-muted); font-size: 1rem; font-weight: 200;">Decipher the fading poetry fragments.</p>
+                <button class="help-btn" id="open-rules" title="How to Play" style="position:absolute; right:0; top:10px; background:transparent; border:1px solid rgba(255,255,255,0.1); color:white; width:36px; height:36px; cursor:pointer;">?</button>
+            </header>
+
+            <div class="game-container-split" style="display:flex; gap:60px; align-items:flex-start; width:100%;">
+                
+                <div class="split-left-grid" style="flex:1; display:flex; justify-content:center;">
+                    <div id="wordle-grid"></div>
+                </div>
+                
+                <div class="split-right-dashboard" style="flex:1.1; display:flex; flex-direction:column; gap:25px;">
+                    
+                    <div id="hint-display-box" style="padding: 20px 0; border-bottom:1px solid rgba(255,255,255,0.03); width:100%;">
+                        <p id="hint-text" style="font-size:0.95rem; color:var(--text-muted); font-style:italic; line-height:1.6; font-weight:200;">The vault parameters hum quietly... click trigger below if you lose your way.</p>
+                    </div>
+                    
+                    <button class="hint-trigger-btn" id="hint-btn" style="align-self:flex-start; background:transparent; border:1px solid rgba(173, 147, 99, 0.2); color:#ad9363; padding:12px 30px; font-size:0.75rem; text-transform:uppercase; letter-spacing:1.5px; cursor:pointer; transition:all 0.3s ease;">Unlock Hint (3 Left)</button>
+
+                    <div id="keyboard-container"></div>
+                </div>
+
             </div>
+
+            <footer class="canvas-footer" style="padding: 60px 0 0 0; margin-top:80px; width:100%;">
+                <p>The Crypt Engine • System Secured by Rish</p>
+            </footer>
 
         </div>
     </main>
 
-    <footer>
-        <p>© 2026 Rish Verse • Crafted by Rish</p>
-    </footer>
-
     <script src="words.js"></script>
     <script src="thecrypt.js"></script>
-
-    <script>
-    window.addEventListener("pageshow", function (event) {
-        if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
-            window.location.reload();
-        }
-    });
-</script>
+    <script src="script.js"></script>
 </body>
 </html>

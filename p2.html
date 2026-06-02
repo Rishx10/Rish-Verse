@@ -1,107 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Where the Dreamlight Burns • Rish Verse</title>
-
-    <link rel="icon"
-          type="image/png"
-          href="images/favicon.png">
-
-    <link rel="stylesheet"
-          href="style.css">
-
-    <link rel="preconnect"
-          href="https://fonts.googleapis.com">
-
-    <link rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
-          rel="stylesheet">
-
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet">
 </head>
-
 <body>
     <div class="progress-bar"></div>
     <div class="page-transition"></div>
 
-<header>
-
-    <nav>
-
-        <div class="logo-section">
-
-            <a href="index.html"
-               class="brand-link">
-
-                <div class="brand">
-
-                    <img src="images/logo.png"
-                         class="nav-logo">
-
-                    <div>
-
-                        <h1>Rish Verse</h1>
-
-                        <p class="tagline">
-                            Bring Creativity to life
-                        </p>
-
-                    </div>
-
-                </div>
-
+    <!-- FIXED ASYMMETRIC INTERNAL ANTHOLOGY NAVIGATION -->
+    <aside class="side-panel">
+        <div class="panel-header">
+            <a href="index.html" class="brand-link">
+                <img src="images/logo.png" class="nav-logo" alt="Rish Verse Logo">
+                <h1>Rish Verse</h1>
             </a>
-
+            <p class="tagline">Anthology Index</p>
         </div>
 
-        <ul class="nav-links">
+        <!-- REPLACED MAIN NAV WITH DYNAMIC POEM CONSOLE CONTROLS -->
+        <nav class="vertical-nav">
+            <ul class="nav-links">
+                <li><a href="p1.html" data-num="I">Unsaid</a></li>
+                <li><a href="p2.html" class="active" data-num="II">Where the Dreamlight Burns</a></li>
+                <li><a href="p3.html" data-num="III">The Rope Still Hangs</a></li>
+                <li><a href="p4.html" data-num="IV">The Rouge in My Throat</a></li>
+                <li><a href="p5.html" data-num="V">Liberation</a></li>
+            </ul>
+        </nav>
 
-            <li><a href="index.html">Home</a></li>
+        <div class="panel-footer">
+            <a href="poems.html" class="line-link" style="font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;">← Main Index</a>
+        </div>
+    </aside>
 
-            <li><a href="gallery.html">Gallery</a></li>
-
-            <li><a href="poems.html">Poems</a></li>
-
-            <li><a href="thecrypt.html">The Crypt</a></li>
-
-        </ul>
-
-    </nav>
-
-</header>
-
-
-
-<section class="poem-reading-page">
-
-    <div class="poem-reading-overlay"></div>
-
-    <div class="poem-reading-content">
-
-        <span>
-            Dreams / Surrealism
-        </span>
-
-        <h1>
-            Where the Dreamlight Burns
-        </h1>
-
-        <h3>
-            by Rish
-        </h3>
-
-        <div class="poem-content">
-
-            <p>
+    <!-- FLUID TEXT READING CANVAS -->
+    <main class="main-content">
+        <article class="editorial-segment text-reading-arena" style="padding-top: 140px;">
+            <p class="section-meta">Dreams / Surrealism</p>
+            <h1 class="poem-title" style="font-family: var(--font-serif); font-size: 4rem; font-weight: 300; margin: 15px 0 10px;">Where the Dreamlight Burns</h1>
+            <h3 style="font-family: var(--font-serif); font-style: italic; font-size: 1.2rem; color: var(--text-muted); font-weight: 300; margin-bottom: 50px;">by Rish</h3>
+            
+            <div class="poem-body-text" style="font-family: var(--font-serif); font-size: 1.35rem; line-height: 2.2; color: rgba(255,255,255,0.85); font-weight: 300; letter-spacing: 0.5px; margin-bottom: 80px;">
                 I dreamt I swallowed a silver sun,<br>
                 it melted down my throat like wine,<br>
                 the stars applauded, one by one,<br>
@@ -126,72 +72,47 @@
                 a hunger I can’t seem to quell,<br>
                 and though reality will spurn,<br>
                 I’ll chase the dreamlight into hell.
-            </p>
+            </div>
+            <a href="poems.html" class="line-link">← Return to Main Index</a>
+        </article>
 
-        </div>
-
-        <section class="review-section">
-
-            <div class="review-container">
-
-                <h2>
-                    Leave Your Echo
-                </h2>
-
-                <p class="review-subtext">
-                    Tell me how this space felt to you.
-                </p>
-
+        <!-- REAL-TIME CUSTOM REVIEW LEDGER -->
+        <section class="editorial-segment scroll-fade">
+            <p class="section-meta">Ledger Registry</p>
+            <h3>Leave Your Echo</h3>
+            <p class="segment-subtext">Tell me how this space felt to you.</p>
+            
+            <div class="interactive-echo-box">
                 <div class="star-rating">
-
                     <span data-rating="1">★</span>
                     <span data-rating="2">★</span>
                     <span data-rating="3">★</span>
                     <span data-rating="4">★</span>
                     <span data-rating="5">★</span>
-
                 </div>
-
-                <form id="reviewForm">
-
-                    <input type="text"
-                           id="reviewName"
-                           placeholder="Your name (optional)">
-
-                    <textarea id="reviewText"
-                              placeholder="Share what you felt..."
-                              required></textarea>
-
-                    <button type="submit">
-
-                        Submit Review
-
-                    </button>
-
+                
+                <form id="reviewForm" class="minimal-form">
+                    <div class="form-row">
+                        <input type="text" id="reviewName" placeholder="Your name (optional)">
+                    </div>
+                    <div class="form-row">
+                        <textarea id="reviewText" placeholder="Share what you felt..." required></textarea>
+                    </div>
+                    <div class="form-button-row">
+                        <button type="submit" class="submit-action-btn">Submit Review</button>
+                    </div>
                 </form>
 
-                <div id="reviewsContainer"></div>
-
+                <div id="reviewsContainer" class="live-ledger-feed"></div>
             </div>
-
         </section>
 
-    </div>
+        <footer class="canvas-footer">
+            <p>Rish Verse Textual • Secure Anthology Stack</p>
+        </footer>
+    </main>
 
-</section>
-
-
-<script src="script.js"></script>
-<script type="module" src="reviews.js"></script>
-
-<script>
-    window.addEventListener("pageshow", function (event) {
-        if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
-            window.location.reload();
-        }
-    });
-</script>
-
+    <script src="script.js"></script>
+    <script type="module" src="database.js"></script>
 </body>
-
 </html>

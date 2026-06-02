@@ -1,384 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rish Verse</title>
-
-    <link rel="icon"
-          type="image/png"
-          href="images/favicon.png">
-
-    <link rel="stylesheet"
-          href="style.css">
-
-    <link rel="preconnect"
-          href="https://fonts.googleapis.com">
-
-    <link rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
-          rel="stylesheet">
-
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Inter:wght@200;300;400;500&display=swap" rel="stylesheet">
 </head>
-
 <body>
     <div class="progress-bar"></div>
     <div class="page-transition"></div>
 
-    <!-- LOADING SCREEN -->
-
+    <!-- PREMIUM MINIMALIST ENTRY LOADER -->
     <div class="loader">
-
-        <img src="images/logo.png"
-             alt="Logo"
-             class="loader-logo">
-
-        <h1>Rish Verse</h1>
-
+        <div class="loader-content">
+            <img src="images/logo.png" alt="Logo" class="loader-logo">
+            <h1>Rish Verse</h1>
+            <span class="loader-accent"></span>
+        </div>
     </div>
 
-
-    <!-- HERO SECTION -->
-
-    <section class="hero">
-
-        <!-- BACKGROUND IMAGES -->
-
-        <div class="hero-slides">
-
-            <div class="slide active"
-                 style="background-image: url('images/i1.jpg');">
-            </div>
-
-            <div class="slide"
-                 style="background-image: url('images/i2.jpg');">
-            </div>
-
-            <div class="slide"
-                 style="background-image: url('images/i3.jpg');">
-            </div>
-
-            <div class="slide"
-                 style="background-image: url('images/i4.jpg');">
-            </div>
-
-            <div class="slide"
-                 style="background-image: url('images/i5.jpg');">
-            </div>
-
+    <!-- ASYMMETRIC LOOKBOOK NAVIGATION (FIXED LEFT PANEL) -->
+    <aside class="side-panel">
+        <div class="panel-header">
+            <a href="index.html" class="brand-link">
+                <img src="images/logo.png" class="nav-logo" alt="Rish Verse Logo">
+                <h1>Rish Verse</h1>
+            </a>
+            <p class="tagline">Bring Creativity to life</p>
         </div>
 
+        <nav class="vertical-nav">
+            <ul class="nav-links">
+                <li><a href="index.html" class="active" data-num="01">Home</a></li>
+                <li><a href="gallery.html" data-num="02">Gallery</a></li>
+                <li><a href="poems.html" data-num="03">Poems</a></li>
+                <li><a href="thecrypt.html" data-num="04">The Crypt</a></li>
+            </ul>
+        </nav>
 
-        <!-- DARK OVERLAY -->
+        <div class="panel-footer">
+            <p>© 2026 Archive</p>
+        </div>
+    </aside>
 
-        <div class="overlay"></div>
+    <!-- FLUID ART CANVAS (SCROLLING RIGHT SIDE) -->
+    <main class="main-content">
+        
+        <!-- CINEMATIC HERO SLIDER SECTION -->
+        <section class="hero-segment">
+            <div class="hero-slides">
+                <div class="slide active" style="background-image: url('images/i1.jpg');"></div>
+                <div class="slide" style="background-image: url('images/i2.jpg');"></div>
+                <div class="slide" style="background-image: url('images/i3.jpg');"></div>
+                <div class="slide" style="background-image: url('images/i4.jpg');"></div>
+                <div class="slide" style="background-image: url('images/i5.jpg');"></div>
+            </div>
+            <div class="canvas-overlay"></div>
 
+            <div class="hero-text-wrapper">
+                <p class="section-meta">Introduction</p>
+                <h2>Through lenses,<br><span class="italic-serif">silence</span> learns to breathe.</h2>
+                <p class="hero-narrative">
+                    A curated digital sanctuary stitching together wildlife photography, atmospheric landscapes, minimalist verses, and tailored media configurations beneath a single, coherent aesthetic sky.
+                </p>
+            </div>
+            <div class="scroll-prompt"><span>Scroll to view archive</span></div>
+        </section>
 
-        <!-- NAVBAR -->
-
-        <header>
-
-            <nav>
-
-                <div class="logo-section">
-
-                    <a href="index.html"
-                       class="brand-link">
-
-                        <div class="brand">
-
-                            <img src="images/logo.png"
-                                 class="nav-logo">
-
-                            <div>
-
-                                <h1>Rish Verse</h1>
-
-                                <p class="tagline">
-                                    Bring Creativity to life
-                                </p>
-
-                            </div>
-
-                        </div>
-
-                    </a>
-
+        <!-- BORDERLESS CONCEPT STATEMENT -->
+        <section class="editorial-segment scroll-fade">
+            <p class="section-meta">01 / Concept</p>
+            <h3 class="poem-title">The Philosophy of the Verse</h3>
+            <div class="editorial-grid">
+                <div class="editorial-text">
+                    <p>
+                        This matrix functions beyond the restrictions of a conventional portfolio layout. It is built as a living anthology where high-contrast environmental frames and raw typography exist in permanent dialogue.
+                    </p>
                 </div>
-
-
-                <ul class="nav-links">
-
-                    <li><a href="index.html">Home</a></li>
-
-                    <li><a href="gallery.html">Gallery</a></li>
-
-                    <li><a href="poems.html">Poems</a></li>
-
-                    <li><a href="thecrypt.html">The Crypt</a></li>
-
-                </ul>
-
-            </nav>
-
-        </header>
-
-
-        <!-- HERO CONTENT -->
-
-        <div class="hero-content">
-
-            <p class="hero-small-text">
-                Wildlife • Poetry • Visual Storytelling
-            </p>
-
-            <h2>
-                Through lenses,<br>
-                silence learns to breathe.
-            </h2>
-
-            <p class="hero-description">
-                A cinematic archive of wildlife photography,
-                landscapes, poetry, and football edits stitched
-                together beneath one universe.
-            </p>
-
-            <div class="hero-buttons">
-
-                <a href="gallery.html"
-                   class="primary-btn">
-                    Explore Gallery
-                </a>
-
-                <a href="poems.html"
-                   class="secondary-btn">
-                    Read Poems
-                </a>
-
+                <div class="editorial-links">
+                    <a href="gallery.html" class="line-link">Explore Photography</a>
+                    <a href="poems.html" class="line-link">Read Written Verses</a>
+                    <a href="thecrypt.html" class="line-link">Enter The Crypt Puzzle</a>
+                </div>
             </div>
+        </section>
 
-        </div>
-
-
-        <!-- SCROLL INDICATOR -->
-
-        <div class="scroll-indicator">
-
-            <span></span>
-
-        </div>
-
-    </section>
-
-
-    <!-- ABOUT SECTION -->
-
-    <section class="about-section">
-
-        <div class="about-container">
-
-            <div class="about-left">
-
-                <h2>
-                    Welcome to Rish Verse
-                </h2>
-
-                <p>
-                    This is more than a portfolio.
-                    It is a space where landscapes,
-                    wildlife, memories, poems,
-                    and visual edits exist beneath
-                    the same sky.
-                </p>
-
+        <!-- EXTERNAL PORTALS MATRIX -->
+        <section class="editorial-segment scroll-fade">
+            <p class="section-meta">02 / Extensions</p>
+            <h3>Channels & Portals</h3>
+            <div class="portal-links-grid">
+                <a href="https://www.youtube.com/@rishx10" target="_blank" class="portal-card">
+                    <h4>YouTube / <span class="card-meta">rishx10</span></h4>
+                    <p>Cinematic football expressions, structural pacing edits, and high-fidelity video rendering configurations.</p>
+                </a>
+                <a href="https://www.instagram.com/_rish__8/" target="_blank" class="portal-card">
+                    <h4>Instagram / <span class="card-meta">_rish__8</span></h4>
+                    <p>High-contrast wildlife documentation, remote landscape captures, and raw environmental visual data.</p>
+                </a>
             </div>
-
-            <div class="about-right">
-
-    <a href="gallery.html"
-       class="glass-card">
-
-        <h3>
-            Photography
-        </h3>
-
-        <p>
-            Wildlife, landscapes,
-            moody skies and cinematic frames.
-        </p>
-
-    </a>
-
-
-    <a href="poems.html"
-       class="glass-card">
-
-        <h3>
-            Poetry
-        </h3>
-
-        <p>
-            Emotional minimalism,
-            surrealism and midnight thoughts.
-        </p>
-
-    </a>
-
-
-    <a href="thecrypt.html"
-       class="glass-card">
-
-        <h3>
-            The Crypt
-        </h3>
-
-        <p>
-         Welcome to The Crypt, a word puzzle game!
-        </p>
-
-    </a>
-
- </div>
-
- </div>
-
-
-    </section>
-
-
-    <!-- SOCIAL SECTION -->
-
-    <section class="socials-section">
-
-        <h2>
-            Find Me Elsewhere
-        </h2>
-
-        <div class="social-grid">
-
-            <a href="https://www.youtube.com/@rishx10"
-               target="_blank"
-               class="social-card">
-
-                <h3>YouTube</h3>
-
-                <p>
-                    Football edits, Messi tributes,
-                    cinematic shorts and visual storytelling.
-                </p>
-
-            </a>
-
-
-            <a href="https://www.instagram.com/_rish__8/"
-               target="_blank"
-               class="social-card">
-
-                <h3>Instagram</h3>
-
-                <p>
-                    Wildlife frames, landscapes,
-                    nature photography and visual atmosphere.
-                </p>
-
-            </a>
-
-        </div>
-
-    </section>
-
-    <!-- REVIEW SECTION -->
-
-<section class="review-section">
-
-    <div class="review-container">
-
-        <h2>
-            Leave Your Echo
-        </h2>
-
-        <p class="review-subtext">
-            Tell me how this universe felt to you.
-        </p>
-
-
-        <!-- STARS -->
-
-        <div class="star-rating">
-
-            <span data-rating="1">★</span>
-            <span data-rating="2">★</span>
-            <span data-rating="3">★</span>
-            <span data-rating="4">★</span>
-            <span data-rating="5">★</span>
-
-        </div>
-
-
-        <!-- REVIEW FORM -->
-
-        <form id="reviewForm">
-
-            <input type="text"
-                   id="reviewName"
-                   placeholder="Your name (optional)">
-
-            <textarea id="reviewText"
-                      placeholder="Share what you felt..."
-                      required></textarea>
-
-            <button type="submit">
-
-                Submit Review
-
-            </button>
-
-        </form>
-
-
-        <!-- REVIEWS DISPLAY -->
-
-        <div id="reviewsContainer">
-
-        </div>
-
-    </div>
-
-</section>
-
-
-    <!-- FOOTER -->
-
-    <footer>
-
-        <p>
-            © 2026 Rish Verse • Crafted by Rish
-        </p>
-
-    </footer>
-
-
-        <script src="script.js"></script>
-
-        <script type="module"
-        src="reviews.js"></script>
-
-        <script>
-      window.addEventListener("pageshow", function (event) {
-        if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
-            window.location.reload();
-        }
-        });
-       </script>
-
+        </section>
+
+        <!-- REAL-TIME FIRESTORE REGISTRY (ECHOES) -->
+        <section class="editorial-segment scroll-fade">
+            <p class="section-meta">03 / Registry</p>
+            <h3>Leave Your Echo</h3>
+            <p class="segment-subtext">Record your impression inside the live database ledger.</p>
+            
+            <div class="interactive-echo-box">
+                <div class="star-rating" id="homeStarRating">
+                    <span data-rating="1">★</span>
+                    <span data-rating="2">★</span>
+                    <span data-rating="3">★</span>
+                    <span data-rating="4">★</span>
+                    <span data-rating="5">★</span>
+                </div>
+                
+                <form id="reviewForm" class="minimal-form">
+                    <div class="form-row">
+                        <input type="text" id="reviewName" placeholder="Identity / Anonymous Voyager">
+                    </div>
+                    <div class="form-row">
+                        <textarea id="reviewText" placeholder="Drop your thought or structural response..." required></textarea>
+                    </div>
+                    <div class="form-button-row">
+                        <button type="submit" class="submit-action-btn">Etch Impression</button>
+                    </div>
+                </form>
+
+                <!-- Live Stream Feed Targeted Container -->
+                <div id="reviewsContainer" class="live-ledger-feed"></div>
+            </div>
+        </section>
+
+        <footer class="canvas-footer">
+            <p>Rish Verse Engine • Built for the unique</p>
+        </footer>
+
+    </main>
+
+    <!-- Master Scripts Framework Links -->
+    <script src="script.js"></script>
+    <script type="module" src="database.js"></script>
 </body>
-
 </html>

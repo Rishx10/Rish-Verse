@@ -1,274 +1,228 @@
 // ==========================================================================
-// GLOBAL NAVIGATION LIFECYCLE ROUTER (FIXES BACK-BUTTON BLACKOUT LOOPS)
+// 1. GLOBAL LIFESTYLE ROUTER (PREVENTS BACK-BUTTON OVERLAY FREEZES)
 // ==========================================================================
 window.addEventListener("pageshow", (event) => {
-    // If arriving via back/forward memory cache, force state resetting
     if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
         const transitionLayer = document.querySelector(".page-transition");
         const loaderLayer = document.querySelector(".loader");
         
-        if (transitionLayer) {
-            transitionLayer.classList.remove("active");
-        }
+        if (transitionLayer) transitionLayer.classList.remove("active");
         if (loaderLayer) {
-            loaderLayer.style.display = "none";
+            loaderLayer.style.opacity = "0";
+            loaderLayer.style.visibility = "hidden";
         }
         
-        // Re-trigger scroll positioning states to fix any stuck opacity layers
-        if (typeof revealOnScroll === "function") {
-            revealOnScroll();
-        }
+        // Re-calculate visible scroll items to prevent stuck layouts
+        revealOnScroll();
     }
 });
 
-
-// =========================
-// LOADING SCREEN
-// =========================
-window.addEventListener("load", () => {
+// ==========================================================================
+// 2. TIMED PACKET LOADING INITIALIZER
+// ==========================================================================
+window.addEventListener("DOMContentLoaded", () => {
     const loader = document.querySelector(".loader");
     if (loader) {
         setTimeout(() => {
-            loader.style.display = "none";
-        }, 2800);
+            loader.style.opacity = "0";
+            loader.style.visibility = "hidden";
+        }, 1200); // Snappy, premium load transition
     }
 });
 
-
-// =========================
-// HERO IMAGE ROTATION
-// =========================
+// ==========================================================================
+// 3. CINEMATIC HERO BACKGROUND SLIDESHOW PARALLAX MOTOR
+// ==========================================================================
 const slides = document.querySelectorAll(".slide");
-let currentSlide = 0;
+let activeSlideIndex = 0;
 
-function changeSlide() {
+function rotateHeroSlides() {
     if (slides.length === 0) return;
-
-    slides[currentSlide].classList.remove("active");
-    currentSlide++;
-
-    if (currentSlide >= slides.length) {
-        currentSlide = 0;
-    }
-
-    slides[currentSlide].classList.add("active");
+    slides[activeSlideIndex].classList.remove("active");
+    activeSlideIndex = (activeSlideIndex + 1) % slides.length;
+    slides[activeSlideIndex].classList.add("active");
 }
 
 if (slides.length > 0) {
-    setInterval(changeSlide, 6000);
+    setInterval(rotateHeroSlides, 6000);
 }
 
-
-// =========================
-// NAVBAR SCROLL EFFECT
-// =========================
-const nav = document.querySelector("nav");
-
-window.addEventListener("scroll", () => {
-    if (!nav) return;
-
-    if (window.scrollY > 50) {
-        nav.style.background = "rgba(5,5,5,0.75)";
-        nav.style.backdropFilter = "blur(18px)";
-        nav.style.border = "1px solid rgba(255,255,255,0.12)";
-    } else {
-        nav.style.background = "rgba(10,10,10,0.35)";
-        nav.style.backdropFilter = "blur(14px)";
-        nav.style.border = "1px solid rgba(255,255,255,0.08)";
-    }
-});
-
-
-// =========================
-// FADE IN ON SCROLL
-// =========================
-const revealElements = document.querySelectorAll(".glass-card, .social-card, .about-left");
+// ==========================================================================
+// 4. STAGGERED SCROLL-REVEAL MANAGER UTILITY
+// ==========================================================================
+const revealElements = document.querySelectorAll(".scroll-fade, .portal-card, .poem-index-row");
 
 function revealOnScroll() {
-    const triggerBottom = window.innerHeight * 0.85;
-
+    const triggerThreshold = window.innerHeight * 0.9;
     revealElements.forEach(element => {
         const elementTop = element.getBoundingClientRect().top;
-
-        if (elementTop < triggerBottom) {
-            element.style.opacity = "1";
-            element.style.transform = "translateY(0px)";
+        if (elementTop < triggerThreshold) {
+            element.classList.add("revealed");
         }
     });
 }
 
 if (revealElements.length > 0) {
-    revealElements.forEach(element => {
-        element.style.opacity = "0";
-        element.style.transform = "translateY(40px)";
-        element.style.transition = "all 1s ease";
-    });
-
     window.addEventListener("scroll", revealOnScroll);
-    revealOnScroll();
+    // Execute immediately on payload paint to verify initial above-fold elements
+    setTimeout(revealOnScroll, 100);
 }
 
+// ==========================================================================
+// 5. HIGH-PERFORMANCE GALLERY "LOAD MORE" ENGINE
+// ==========================================================================
+const initialVisibleCount = 9;
+const galleryCards = document.querySelectorAll("#galleryGridMatrix .gallery-card");
+const loadMoreTrigger = document.getElementById("galleryLoadMoreTrigger");
+const loadMoreWrapper = document.getElementById("galleryLoadBtnWrapper");
 
-// =========================
-// PARALLAX EFFECT (CORRECTED)
-// =========================
-window.addEventListener("scroll", () => {
-    const scrollY = window.scrollY;
+let currentDisplayedCount = initialVisibleCount;
 
-    slides.forEach(slide => {
-        /* FIXED: We use translateY for vertical shifting but omit the explicit inline scale() declaration.
-           This allows your continuous CSS @keyframes slowZoom scale parameters to run completely uninterrupted.
-        */
-        slide.style.transform = `translateY(${scrollY * 0.08}px)`;
+if (galleryCards.length > 0 && loadMoreTrigger) {
+    loadMoreTrigger.addEventListener("click", () => {
+        let itemsToReveal = 8; // Load photos smoothly in segments of 8
+        let targetMax = Math.min(currentDisplayedCount + itemsToReveal, galleryCards.length);
+        
+        for (let i = currentDisplayedCount; i < targetMax; i++) {
+            const card = galleryCards[i];
+            card.style.display = "block";
+            // Staggered timing delay so photo nodes fade up in sequence
+            setTimeout(() => {
+                card.style.opacity = "1";
+                card.classList.remove("initial-hidden");
+            }, (i - currentDisplayedCount) * 60);
+        }
+        
+        currentDisplayedCount = targetMax;
+        
+        // Wipe away the button wrapper frame if all visual inventory items are rendered
+        if (currentDisplayedCount >= galleryCards.length && loadMoreWrapper) {
+            loadMoreWrapper.style.display = "none";
+        }
     });
-});
-
+}
 
 // ==========================================================================
-// GALLERY LIGHTBOX INTERACTIVE PANEL DISPLAY ENGINE WITH SLIDE CONTROLS
+// 6. PREMIUM DUAL-PANEL LIGHTBOX CANVAS EXPOSITION MOTOR
 // ==========================================================================
-const galleryCards = document.querySelectorAll(".masonry-gallery .gallery-card img");
-const lightboxElement = document.querySelector(".lightbox");
-const lightboxImageContainer = document.querySelector(".lightbox-image");
-const closeLightboxWidget = document.querySelector(".close-lightbox");
+const lightboxElement = document.getElementById("masterSocialLightbox");
+const lightboxImageNode = document.getElementById("lightboxTargetViewImage");
+const closeLightboxBtn = document.getElementById("closeLightboxWidget");
 const prevBtn = document.getElementById("galleryPrevBtn");
 const nextBtn = document.getElementById("galleryNextBtn");
+const galleryImages = document.querySelectorAll("#galleryGridMatrix .gallery-card img");
 
 window.currentImageTargetId = null;
-let activeImageIndex = -1;
+let activeLightboxImageIndex = -1;
 
-// Core renderer function to update the viewport image frame and reload comments
-function updateLightboxView(index) {
-    if (index < 0 || index >= galleryCards.length) return;
+function updateLightboxViewport(index) {
+    if (index < 0 || index >= galleryImages.length || !lightboxImageNode) return;
     
-    activeImageIndex = index;
-    const activeImgSrc = galleryCards[activeImageIndex].src;
+    activeLightboxImageIndex = index;
+    const targetSrc = galleryImages[activeLightboxImageIndex].src;
     
-    // 1. Swap image source element
-    if (lightboxImageContainer) {
-        lightboxImageContainer.src = activeImgSrc;
-    }
+    // 1. Populate visual panel frame
+    lightboxImageNode.src = targetSrc;
     
-    // 2. Extract precise file context target ID and STRIP OUT Forbidden Characters like Dots!
-    const filename = activeImgSrc.split("/").pop(); // Gets "i1.jpg"
+    // 2. Extract specific image token name and completely clean forbidden chars (like dots)
+    const rawFilename = targetSrc.split("/").pop(); // Yields "i1.jpg"
+    const parsedFilename = rawFilename.replace(/\./g, ""); // Converts into "i1jpg"
     
-    // CRITICAL HOTFIX: Replaces the dot (".") with nothing so Firebase accepts the key safely
-    const cleanFilename = filename.replace(/\./g, ""); // Converts "i1.jpg" into "i1jpg"
-    window.currentImageTargetId = "image-" + cleanFilename.replace(/[^a-zA-Z0-9.\-_]/g, "");
+    // Generate immutable alphanumeric path index reference key for Cloud Firestore paths safely
+    const databaseTargetToken = "image-" + parsedFilename.replace(/[^a-zA-Z0-9.\-_]/g, "");
+    window.currentImageTargetId = databaseTargetToken;
     
-    // 3. Fire custom event routine so reviews.js syncs data instantly
+    // 3. Dispatch global system event notify routine so database.js intercepts sync actions instantly
     window.dispatchEvent(new CustomEvent("lightboxOpened"));
 }
 
-// Attach listener index slots to initial grid items
-galleryCards.forEach((image, index) => {
-    image.addEventListener("click", () => {
-        if (!lightboxElement || !lightboxImageContainer) return;
-        
-        // Render view target framework
-        updateLightboxView(index);
+// Hook thumbnail click event triggers onto all gallery card objects
+galleryImages.forEach((image, index) => {
+    image.parentElement.addEventListener("click", () => {
+        if (!lightboxElement) return;
+        updateLightboxViewport(index);
         lightboxElement.classList.add("active");
+        document.body.style.overflow = "hidden"; // Halt body window scroll bleed while viewing modal
     });
 });
 
-// Structural navigation trigger callbacks
-function navigateLightboxNext() {
+// Linear Navigation Handlers
+function navigateLightboxForward() {
     if (!lightboxElement || !lightboxElement.classList.contains("active")) return;
-    let nextIndex = activeImageIndex + 1;
-    if (nextIndex >= galleryCards.length) nextIndex = 0; 
-    updateLightboxView(nextIndex);
+    let targetIndex = (activeLightboxImageIndex + 1) % galleryImages.length;
+    updateLightboxViewport(targetIndex);
 }
 
-function navigateLightboxPrev() {
+function navigateLightboxBackward() {
     if (!lightboxElement || !lightboxElement.classList.contains("active")) return;
-    let prevIndex = activeImageIndex - 1;
-    if (prevIndex < 0) prevIndex = galleryCards.length - 1; 
-    updateLightboxView(prevIndex);
+    let targetIndex = (activeLightboxImageIndex - 1 + galleryImages.length) % galleryImages.length;
+    updateLightboxViewport(targetIndex);
 }
 
-// On-screen arrows click triggers
-if (nextBtn) nextBtn.addEventListener("click", navigateLightboxNext);
-if (prevBtn) prevBtn.addEventListener("click", navigateLightboxPrev);
+if (nextBtn) nextBtn.addEventListener("click", navigateLightboxForward);
+if (prevBtn) prevBtn.addEventListener("click", navigateLightboxBackward);
 
-// KEYBOARD KEY ACTIONS LISTENER OVERRIDES (Left, Right, and Escape Keys)
-document.addEventListener("keydown", (e) => {
-    if (!lightboxElement || !lightboxElement.classList.contains("active")) return;
-    
-    // Ignore key presses if the user is typing a comment inside the form fields
-    if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") return;
-
-    if (e.key === "ArrowRight") {
-        navigateLightboxNext();
-    } else if (e.key === "ArrowLeft") {
-        navigateLightboxPrev();
-    } else if (e.key === "Escape") {
-        lightboxElement.classList.remove("active");
-        window.currentImageTargetId = null;
-    }
-});
-
-// Close UI mechanisms
-if (closeLightboxWidget) {
-    closeLightboxWidget.addEventListener("click", () => {
-        if (lightboxElement) lightboxElement.classList.remove("active");
-        window.currentImageTargetId = null;
-    });
+// Track manual layout close callbacks
+function closeFullscreenLightbox() {
+    if (!lightboxElement) return;
+    lightboxElement.classList.remove("active");
+    document.body.style.overflow = "";
+    window.currentImageTargetId = null;
 }
+
+if (closeLightboxBtn) closeLightboxBtn.addEventListener("click", closeFullscreenLightbox);
 
 if (lightboxElement) {
     lightboxElement.addEventListener("click", (e) => {
-        if (e.target === lightboxElement || e.target.classList.contains("lightbox-art-pane")) {
-            lightboxElement.classList.remove("active");
-            window.currentImageTargetId = null;
+        // Close overlay safely if user clicks outside boundaries onto dark canvas backdrop margins
+        if (e.target === lightboxElement || e.target.id === "lightboxArtPane") {
+            closeFullscreenLightbox();
         }
     });
 }
 
-// =========================
-// SCROLL PROGRESS BAR
-// =========================
-const progressBar = document.querySelector(".progress-bar");
+// Map hardware keyboard shortcuts overrides
+document.addEventListener("keydown", (e) => {
+    if (!lightboxElement || !lightboxElement.classList.contains("active")) return;
+    
+    // Freeze global key binds if active browser focus context targets a comment form text field
+    if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") return;
+
+    if (e.key === "ArrowRight") navigateLightboxForward();
+    else if (e.key === "ArrowLeft") navigateLightboxBackward();
+    else if (e.key === "Escape") closeFullscreenLightbox();
+});
+
+// ==========================================================================
+// 7. SCROLL INTERACTION PROGRESS METRIC
+// ==========================================================================
+const scrollTrackerBar = document.querySelector(".progress-bar");
 
 window.addEventListener("scroll", () => {
-    if (!progressBar) return;
-
-    const scrollTop = document.documentElement.scrollTop;
-    const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    const scrollPercent = (scrollTop / scrollHeight) * 100;
-
-    progressBar.style.width = scrollPercent + "%";
+    if (!scrollTrackerBar) return;
+    const currentTop = document.documentElement.scrollTop;
+    const computeHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    const scrollPercentage = (currentTop / computeHeight) * 100;
+    scrollTrackerBar.style.width = `${scrollPercentage}%`;
 });
 
+// ==========================================================================
+// 8. ANIMATED SITE ROUTER TRANSITION TIMELINES
+// ==========================================================================
+const visualTransitionCanvas = document.querySelector(".page-transition");
+const hyperLinks = document.querySelectorAll('a[href$=".html"]');
 
-// =========================
-// PAGE TRANSITIONS
-// =========================
-const transition = document.querySelector(".page-transition");
-const internalLinks = document.querySelectorAll('a[href$=".html"]');
-
-internalLinks.forEach(link => {
-    link.addEventListener("click", function(e) {
-        const target = this.getAttribute("href");
-
-        // Ensure we don't block layout actions if the user targets the current active tab path
-        if (target && transition && target !== window.location.pathname.split("/").pop()) {
+hyperLinks.forEach(anchor => {
+    anchor.addEventListener("click", function(e) {
+        const targetPath = this.getAttribute("href");
+        const matchingCurrentTab = targetPath === window.location.pathname.split("/").pop();
+        
+        if (targetPath && visualTransitionCanvas && !matchingCurrentTab) {
             e.preventDefault();
-            transition.classList.add("active");
-
+            visualTransitionCanvas.classList.add("active");
             setTimeout(() => {
-                window.location.href = target;
-            }, 500);
+                window.location.href = targetPath;
+            }, 400);
         }
     });
-});
-
-
-// =========================
-// PAGE LOAD TRANSITION
-// =========================
-window.addEventListener("load", () => {
-    const transition = document.querySelector(".page-transition");
-    if (transition) {
-        transition.classList.remove("active");
-    }
 });
