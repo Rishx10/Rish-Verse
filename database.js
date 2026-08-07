@@ -42,8 +42,6 @@ function escapeHtmlStrings(str) {
  */
 function displayMinimalistToast(message) {
     let container = document.getElementById("toast-container");
-    
-    // Inject fallback container frame if missing from template DOM structures
     if (!container) {
         container = document.createElement("div");
         container.id = "toast-container";
@@ -55,7 +53,6 @@ function displayMinimalistToast(message) {
     toast.innerText = message;
     container.appendChild(toast);
 
-    // Gracefully fade and wipe item node after display timeline expires
     setTimeout(() => {
         toast.style.transition = "opacity 0.4s ease, transform 0.4s ease";
         toast.style.opacity = "0";
@@ -77,36 +74,29 @@ function mountUnifiedLedgerSystem() {
 
     // Evaluate route environment context ID pathway automatically 
     const contextualRawId = dynamicPoemTitleIndicator ? dynamicPoemTitleIndicator.innerText : "global-home";
-    
-    // Declaring token with let so it maps across functional loops cleanly
     let secureStorageCollectionToken = contextualRawId.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase();
 
-    // ==========================================================================
-    // HARD-ALIGNMENT BRIDGING: RE-LINKING HISTORICAL FIRESTORE COLLECTIONS
-    // ==========================================================================
+    // HARD-ALIGNMENT BRIDGING TO MATCH RETRIEVED HISTORICAL ENTRIES
     if (secureStorageCollectionToken === "global-home") {
-        secureStorageCollectionToken = "home"; // Restores historical homepage collection link
+        secureStorageCollectionToken = "home";
     } else if (secureStorageCollectionToken === "unsaid") {
-        secureStorageCollectionToken = "p1";    // Links old p1 reviews
+        secureStorageCollectionToken = "p1";
     } else if (secureStorageCollectionToken === "where-the-dreamlight-burns") {
-        secureStorageCollectionToken = "p2";    // Links old p2 reviews
+        secureStorageCollectionToken = "p2";
     } else if (secureStorageCollectionToken === "the-rouge-in-my-throat") {
-        secureStorageCollectionToken = "p4";    // Maps back to your original p4 routing path
+        secureStorageCollectionToken = "p4";
     } else if (secureStorageCollectionToken === "liberation") {
-        secureStorageCollectionToken = "p5";    // Links old p5 reviews
+        secureStorageCollectionToken = "p5";
     }
-   
+
     let internallyTrackedRatingScaleIndex = 0;
 
-    /**
-     * Maps glowing sage-green illumination classes cleanly across index spans
-     */
     function colorizeStarSequenceGlow(ratingIndexValue) {
         starInteractiveSpans.forEach(star => {
             const currentItemWeight = parseInt(star.getAttribute("data-rating"), 10);
             if (currentItemWeight <= ratingIndexValue) {
                 star.classList.add("active");
-                star.style.color = "#7d8f7a"; // Strict style injection override
+                star.style.color = "#7d8f7a";
             } else {
                 star.classList.remove("active");
                 star.style.color = "rgba(255, 255, 255, 0.1)";
@@ -114,7 +104,6 @@ function mountUnifiedLedgerSystem() {
         });
     }
 
-    // Bind kinetic movement listener events onto star arrays
     if (starInteractiveSpans.length > 0) {
         starInteractiveSpans.forEach(star => {
             star.addEventListener("click", (e) => {
@@ -131,10 +120,8 @@ function mountUnifiedLedgerSystem() {
         });
     }
 
-    // Strict non-refresh form execution listener block
     targetFormNode.addEventListener("submit", async (e) => {
-        e.preventDefault(); // Lock browser from running full page refresh cycles completely
-        
+        e.preventDefault();
         const usernamePayloadField = document.getElementById("reviewName")?.value.trim() || "Anonymous Voyager";
         const narrativePayloadField = document.getElementById("reviewText")?.value.trim() || "";
 
@@ -151,14 +138,10 @@ function mountUnifiedLedgerSystem() {
         };
 
         try {
-            // Push structured transactional package straight to Cloud Firestore logs
             await addDoc(collection(db, "reviews", secureStorageCollectionToken, "entries"), dataUploadPackage);
-            
-            // Clean input state targets instantly on transaction resolution
             targetFormNode.reset();
             internallyTrackedRatingScaleIndex = 0;
             colorizeStarSequenceGlow(0);
-            
             displayMinimalistToast("✨ Your impression has been etched into the ledger.");
         } catch (err) {
             console.error("Database Transmission Fault: ", err);
@@ -166,7 +149,6 @@ function mountUnifiedLedgerSystem() {
         }
     });
 
-    // Handle real-time render stream feeding layout containers
     if (recordsOutputBox) {
         const queryStructureRef = query(
             collection(db, "reviews", secureStorageCollectionToken, "entries"), 
@@ -175,7 +157,6 @@ function mountUnifiedLedgerSystem() {
         
         onSnapshot(queryStructureRef, (snapshotSnapshot) => {
             recordsOutputBox.innerHTML = "";
-            
             if (snapshotSnapshot.empty) {
                 recordsOutputBox.innerHTML = `<p style="font-size:0.85rem; color:rgba(255,255,255,0.15); font-style:italic; text-align:center; padding: 20px 0;">No logs recorded inside this sequence index yet.</p>`;
                 return;
@@ -185,8 +166,6 @@ function mountUnifiedLedgerSystem() {
                 const docData = documentWrapper.data();
                 const cardOuterMarkupBlock = document.createElement("div");
                 cardOuterMarkupBlock.className = "review-card";
-                
-                // Construct clean typographical character strings to match requested layout balances
                 let compiledStarIconsString = "★".repeat(docData.rating) + "☆".repeat(5 - docData.rating);
                 
                 cardOuterMarkupBlock.innerHTML = `
@@ -215,17 +194,15 @@ function mountGalleryEngagementSystem() {
 
     window.addEventListener("lightboxOpened", () => {
         if (!window.currentImageTargetId) return;
-
         if (cancelActiveContinuousFeedListenerStream) {
             cancelActiveContinuousFeedListenerStream();
         }
-
         cancelActiveContinuousFeedListenerStream = bindLiveGalleryDataStreams(window.currentImageTargetId);
     });
 
     if (visualCommentFormNode) {
         visualCommentFormNode.addEventListener("submit", async (e) => {
-            e.preventDefault(); // Prevent modal display environment exits
+            e.preventDefault();
             const dynamicImageKeyRef = window.currentImageTargetId;
             if (!dynamicImageKeyRef) return;
 
@@ -312,7 +289,6 @@ function bindLiveGalleryDataStreams(targetImageFileToken) {
     );
     const unbindCommentsListenerChannel = onSnapshot(activeCommentsCollectionSubquery, (snapshotObject) => {
         commentsListScrollBox.innerHTML = "";
-
         if (snapshotObject.empty) {
             commentsListScrollBox.innerHTML = `<p style="font-size:0.85rem; color:rgba(255,255,255,0.15); text-align:center; margin-top:30px; font-style:italic; font-weight:200;">Leave your mark on this frame below.</p>`;
             return;

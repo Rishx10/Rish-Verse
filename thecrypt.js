@@ -1,410 +1,251 @@
 // ==========================================================================
-// CRYPT INTERACTIVE GAME MECHANICS ENGINE WITH MOBILE NATIVE DUAL-INPUTS
+// RISH VERSE CRYPT GAME REACTION ENGINE & TRUE DICTIONARY PIPELINE
 // ==========================================================================
 
-const POEM_ANSWERS = Object.keys(CRYPT_DICTIONARY);
-let SECRET_WORD = POEM_ANSWERS[Math.floor(Math.random() * POEM_ANSWERS.length)];
-const MAX_ATTEMPTS = 6;
-const WORD_LENGTH = 5;
+const TARGET_SECRET_WORD = "VERSE"; // Set your target hidden crypt word here
+let trueEnglishDictionary = new Set();
 
-let currentAttempt = 0;
-let userGuess = "";
-let isGameOver = false;
-let hintsUsed = 0;
+let currentActiveAttemptRow = 0;
+let currentTileCharacterIndex = 0;
+let currentGuessStringPayload = "";
+let systemGameLockedStateFlag = false;
 
-document.addEventListener("DOMContentLoaded", () => {
-    initializeGrid();
-    initializeKeyboard();
-    setupRulesModal();
-    setupHintSystem();
-    setupMobileInputSystem();
-
-    // Balanced desktop event typing listener fallback
-    document.addEventListener("keydown", (e) => {
-        if (isGameOver) return;
-        
-        const modal = document.getElementById("rules-modal");
-        if (modal && modal.classList.contains("active")) return;
-        
-        // Shut engine context typing down if dimensions evaluate as phone size
-        if (window.innerWidth <= 480) return;
-
-        if (e.key === "Enter") {
-            processGuessSubmit();
-        } else if (e.key === "Backspace") {
-            processBackspace();
-        } else if (/^[a-zA-Z]$/.test(e.key)) {
-            injectLetterTile(e.key);
-        }
-    });
-});
-
-// SYSTEM LINK TO NATIVE SYSTEM PHONE KEYBOARD HOOK
-function setupMobileInputSystem() {
-    const hiddenInput = document.getElementById("mobile-keyboard-trigger");
-    const gridContainer = document.getElementById("wordle-grid");
-
-    if (!hiddenInput || !gridContainer) return;
-
-    // Open native mobile keyboard whenever layout background space area is tapped
-    document.addEventListener("click", (e) => {
-        const modal = document.getElementById("rules-modal");
-        if (modal && modal.classList.contains("active")) return;
-        if (e.target.closest("header") || e.target.closest("footer") || e.target.id === "hint-btn" || e.target.id === "open-rules") return;
-
-        if (!isGameOver && window.innerWidth <= 480) {
-            hiddenInput.focus();
-        }
-    });
-
-    // Automatically trigger focused device popups right after rules overlay exits
-    const closeBtn = document.getElementById("close-rules");
-    if (closeBtn) {
-        closeBtn.addEventListener("click", () => {
-            if (window.innerWidth <= 480) {
-                setTimeout(() => hiddenInput.focus(), 400);
-            }
-        });
-    }
-
-    // BULLETPROOF MOBILE BACKSPACE & ENTER INTERCEPTOR
-    hiddenInput.addEventListener("keydown", (e) => {
-        if (window.innerWidth <= 480) {
-            if (e.key === "Backspace") {
-                e.preventDefault(); // Stop default input layout behavior
-                processBackspace();
-                hiddenInput.value = userGuess; // Keep hidden buffer perfectly synced
-            } else if (e.key === "Enter") {
-                e.preventDefault();
-                processGuessSubmit();
-                hiddenInput.value = userGuess;
-            }
-        }
-    });
-
-    // Intercept software alphanumeric stream arrays from active devices
-    hiddenInput.addEventListener("input", (e) => {
-        if (isGameOver || window.innerWidth > 480) {
-            hiddenInput.value = "";
-            return;
-        }
-
-        const dataValue = e.data;
-        
-        // Handle standard character additions
-        if (dataValue && /^[a-zA-Z]$/.test(dataValue)) {
-            if (userGuess.length < WORD_LENGTH) {
-                injectLetterTile(dataValue);
-            }
-        } 
-        
-        // Safety secondary calculation loop fallback for variable mobile delete triggers
-        if (hiddenInput.value.length < userGuess.length) {
-            processBackspace();
-        }
-        
-        hiddenInput.value = userGuess;
-    });
-}
-
-function setupHintSystem() {
-    const hintBtn = document.getElementById("hint-btn");
-    const hintBox = document.getElementById("hint-display-box");
-    const hintText = document.getElementById("hint-text");
-
-    if (!hintBtn || !hintText) return;
-
-    hintBtn.addEventListener("click", () => {
-        if (isGameOver || hintsUsed >= 3) return;
-
-        hintsUsed++;
-        const currentClues = CRYPT_DICTIONARY[SECRET_WORD];
-        const selectedClueText = currentClues[hintsUsed - 1];
-
-        hintText.style.opacity = "0";
-
-        setTimeout(() => {
-            hintText.innerText = `Hint #${hintsUsed}: "${selectedClueText}"`;
-            hintText.classList.add("reveal-mode");
-            hintBox.classList.add("active");
-            hintText.style.opacity = "1";
-            
-            if (window.innerWidth <= 480) {
-                document.getElementById("mobile-keyboard-trigger").focus();
-            }
-        }, 200);
-
-        if (hintsUsed === 1) {
-            hintBtn.innerText = "Unlock Next Hint (2 Left)";
-        } else if (hintsUsed === 2) {
-            hintBtn.innerText = "Unlock Final Hint (1 Left)";
-        } else if (hintsUsed === 3) {
-            hintBtn.innerText = "No Hints Remaining";
-            hintBtn.disabled = true;
-        }
-    });
-}
-
-function setupRulesModal() {
-    const modal = document.getElementById("rules-modal");
-    const openBtn = document.getElementById("open-rules");
-    const closeBtn = document.getElementById("close-rules");
-
-    if (!modal) return;
-
-    setTimeout(() => {
-        modal.classList.add("active");
-    }, 600);
-
-    if (openBtn) openBtn.addEventListener("click", () => modal.classList.add("active"));
-    if (closeBtn) closeBtn.addEventListener("click", () => modal.classList.remove("active"));
-    
-    modal.addEventListener("click", (e) => {
-        if (e.target === modal) modal.classList.remove("active");
-    });
-}
-
-function initializeGrid() {
-    const gridContainer = document.getElementById("wordle-grid");
+/**
+ * Initialize and construct game board matrix frames dynamically
+ */
+function initializeCryptMatrixFrame() {
+    const gridContainer = document.getElementById("cryptGrid");
     if (!gridContainer) return;
-
     gridContainer.innerHTML = "";
 
-    for (let i = 0; i < MAX_ATTEMPTS; i++) {
-        const row = document.createElement("div");
-        row.classList.add("grid-row");
-        for (let j = 0; j < WORD_LENGTH; j++) {
-            const tile = document.createElement("div");
-            tile.classList.add("tile");
-            tile.setAttribute("id", `row-${i}-tile-${j}`);
-            row.appendChild(tile);
+    for (let r = 0; r < 6; r++) {
+        const rowFrame = document.createElement("div");
+        rowFrame.className = "crypt-row";
+        rowFrame.setAttribute("data-row-index", r);
+
+        for (let t = 0; t < 5; t++) {
+            const tileNode = document.createElement("div");
+            tileNode.className = "crypt-tile";
+            tileNode.setAttribute("data-tile-index", t);
+            rowFrame.appendChild(tileNode);
         }
-        gridContainer.appendChild(row);
+        gridContainer.appendChild(rowFrame);
+    }
+    updatePulsingCursorTrack();
+}
+
+/**
+ * Updates the pulsing bottom-border cursor element state cleanly
+ */
+function updatePulsingCursorTrack() {
+    document.querySelectorAll(".crypt-tile").forEach(tile => tile.classList.remove("active-cursor"));
+    
+    if (systemGameLockedStateFlag || currentActiveAttemptRow >= 6) return;
+
+    if (currentTileCharacterIndex < 5) {
+        const targetRow = document.querySelector(`.crypt-row[data-row-index="${currentActiveAttemptRow}"]`);
+        if (targetRow) {
+            const targetTile = targetRow.querySelector(`.crypt-tile[data-tile-index="${currentTileCharacterIndex}"]`);
+            if (targetTile) targetTile.classList.add("active-cursor");
+        }
     }
 }
 
-function initializeKeyboard() {
-    const keyboardContainer = document.getElementById("keyboard-container");
-    if (!keyboardContainer) return;
-
-    keyboardContainer.innerHTML = "";
-
-    const keyRows = [
-        ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
-        ["A", "S", "D", "F", "G", "H", "J", "K", "L"],
-        ["ENTER", "Z", "X", "C", "V", "B", "N", "M", "DELETE"]
-    ];
-
-    keyRows.forEach(rowData => {
-        const rowElement = document.createElement("div");
-        rowElement.classList.add("keyboard-row");
-
-        rowData.forEach(keyText => {
-            const button = document.createElement("button");
-            button.innerText = keyText;
-            button.classList.add("key");
-            button.setAttribute("id", `key-${keyText.toUpperCase()}`);
-            
-            if (keyText === "ENTER" || keyText === "DELETE") {
-                button.classList.add("large");
+/**
+ * Fetch a massive, complete list of 5-letter English words for genuine dictionary validation
+ */
+async function fetchMasterEnglishDictionary() {
+    try {
+        // Connects to a complete public open-source repository of verified 5-letter words
+        const response = await fetch("https://raw.githubusercontent.com/tabatkins/wordle-list/main/words");
+        const rawTextData = await response.text();
+        
+        rawTextData.split("\n").forEach(word => {
+            let cleanWord = word.trim().toUpperCase();
+            if (cleanWord.length === 5) {
+                trueEnglishDictionary.add(cleanWord);
             }
-
-            button.addEventListener("click", () => handleVirtualKeyPress(keyText));
-            rowElement.appendChild(button);
         });
-        keyboardContainer.appendChild(rowElement);
-    });
-}
-
-function handleVirtualKeyPress(key) {
-    if (isGameOver) return;
-    const modal = document.getElementById("rules-modal");
-    if (modal && modal.classList.contains("active")) return;
-
-    if (key === "ENTER") {
-        processGuessSubmit();
-    } else if (key === "DELETE") {
-        processBackspace();
-    } else {
-        injectLetterTile(key);
+        
+        // Safety insurance logic: make sure the secret target word itself is explicitly authorized
+        trueEnglishDictionary.add(TARGET_SECRET_WORD.toUpperCase());
+        console.log(`✨ True dictionary loaded: ${trueEnglishDictionary.size} real English words compiled.`);
+    } catch (err) {
+        console.error("Dictionary download interrupted. Reverting to basic backup validation: ", err);
+        // Instant backup list if local client network blocks Github raw domains
+        ["DRINK", "VERSE", "CRYPT", "POEMS", "LIGHT", "ROUGE", "STAGE", "TRAIN", "CLOUDS"].forEach(w => trueEnglishDictionary.add(w));
     }
 }
 
-function injectLetterTile(letter) {
-    if (userGuess.length >= WORD_LENGTH) return;
-    userGuess += letter.toUpperCase();
-    const activeTile = document.getElementById(`row-${currentAttempt}-tile-${userGuess.length - 1}`);
-    if (activeTile) {
-        activeTile.innerText = letter.toUpperCase();
-        activeTile.classList.add("pop");
-    }
-}
-
-// Fixed desktop typing reset sync parameters
-function processBackspace() {
-    if (userGuess.length === 0) return;
-    const activeTile = document.getElementById(`row-${currentAttempt}-tile-${userGuess.length - 1}`);
-    if (activeTile) {
-        activeTile.innerText = "";
-        activeTile.classList.remove("pop");
-    }
-    userGuess = userGuess.slice(0, -1);
-}
-
-function showCryptToast(message, duration = 3500) {
+function displayMinimalistToast(message) {
     const container = document.getElementById("toast-container");
     if (!container) return;
-    
+
     const toast = document.createElement("div");
-    toast.classList.add("toast");
-    toast.innerHTML = message;
+    toast.className = "toast";
+    toast.innerText = message;
     container.appendChild(toast);
-    
+
     setTimeout(() => {
-        toast.style.animation = "none"; 
         toast.style.transition = "opacity 0.4s ease, transform 0.4s ease";
         toast.style.opacity = "0";
-        toast.style.transform = "translateY(-12px) scale(0.95)";
+        toast.style.transform = "translateY(10px)";
         setTimeout(() => toast.remove(), 400);
-    }, duration);
+    }, 3000);
 }
 
-function processGuessSubmit() {
-    if (userGuess.length < WORD_LENGTH) {
-        showCryptToast("⚠️ Inside the crypt, words require 5 characters.");
+/**
+ * Handle incoming character stroke inputs securely
+ */
+function processCharacterInput(letter) {
+    if (systemGameLockedStateFlag || currentTileCharacterIndex >= 5) return;
+
+    const targetRow = document.querySelector(`.crypt-row[data-row-index="${currentActiveAttemptRow}"]`);
+    if (!targetRow) return;
+
+    const targetTile = targetRow.querySelector(`.crypt-tile[data-tile-index="${currentTileCharacterIndex}"]`);
+    if (targetTile) {
+        targetTile.innerText = letter;
+        currentGuessStringPayload += letter;
+        currentTileCharacterIndex++;
+        updatePulsingCursorTrack();
+    }
+}
+
+function executeDeleteSequence() {
+    if (systemGameLockedStateFlag || currentTileCharacterIndex === 0) return;
+
+    currentTileCharacterIndex--;
+    currentGuessStringPayload = currentGuessStringPayload.slice(0, -1);
+
+    const targetRow = document.querySelector(`.crypt-row[data-row-index="${currentActiveAttemptRow}"]`);
+    if (targetRow) {
+        const targetTile = targetRow.querySelector(`.crypt-tile[data-tile-index="${currentTileCharacterIndex}"]`);
+        if (targetTile) {
+            targetTile.innerText = "";
+        }
+    }
+    updatePulsingCursorTrack();
+}
+
+async function validateSubmissionPackage() {
+    if (systemGameLockedStateFlag) return;
+
+    const targetRow = document.querySelector(`.crypt-row[data-row-index="${currentActiveAttemptRow}"]`);
+    if (!targetRow) return;
+
+    if (currentGuessStringPayload.length < 5) {
+        displayMinimalistToast("⚠️ Not enough character traces inside index.");
+        targetRow.classList.add("shake");
+        setTimeout(() => targetRow.classList.remove("shake"), 400);
         return;
     }
 
-    const secretArray = SECRET_WORD.split("");
-    const guessArray = userGuess.split("");
-    
-    const tileColors = Array(WORD_LENGTH).fill("#252525"); 
-    const keyUpdates = {}; 
+    // TRUE COMPREHENSIVE DICTIONARY VALIDATION CHECK
+    if (!trueEnglishDictionary.has(currentGuessStringPayload)) {
+        displayMinimalistToast(`⚠️ "${currentGuessStringPayload}" is not a valid word.`);
+        targetRow.classList.add("shake");
+        setTimeout(() => targetRow.classList.remove("shake"), 400);
+        return; // Halts right here so fake inputs do not penalize attempts or deduct guesses!
+    }
 
-    guessArray.forEach((letter, idx) => {
-        if (letter === secretArray[idx]) {
-            tileColors[idx] = "#7d8f7a"; 
-            keyUpdates[letter] = "#7d8f7a";
-            secretArray[idx] = null;
-            guessArray[idx] = null;
+    // Word is validated and real! Proceed with game logic evaluations
+    evaluateRowColorFeedback(targetRow);
+}
+
+function evaluateRowColorFeedback(rowElement) {
+    const tiles = rowElement.querySelectorAll(".crypt-tile");
+    let secretTrackingArray = TARGET_SECRET_WORD.split("");
+    let statusLogResultsArray = Array(5).fill("charcoal");
+
+    // Pass 1: Tag direct sage green positions
+    for (let i = 0; i < 5; i++) {
+        if (currentGuessStringPayload[i] === secretTrackingArray[i]) {
+            statusLogResultsArray[i] = "sage-green";
+            secretTrackingArray[i] = null;
         }
-    });
+    }
 
-    guessArray.forEach((letter, idx) => {
-        if (letter === null) return;
-        const secretIdx = secretArray.indexOf(letter);
-        if (secretIdx > -1) {
-            tileColors[idx] = "#ad9363"; 
-            if (keyUpdates[letter] !== "#7d8f7a") {
-                keyUpdates[letter] = "#ad9363";
-            }
-            secretArray[secretIdx] = null;
-        } else {
-            if (!keyUpdates[letter]) {
-                keyUpdates[letter] = "#202020";
+    // Pass 2: Tag misplaced gold elements
+    for (let i = 0; i < 5; i++) {
+        if (statusLogResultsArray[i] !== "sage-green") {
+            const targetMatchIndex = secretTrackingArray.indexOf(currentGuessStringPayload[i]);
+            if (targetMatchIndex !== -1) {
+                statusLogResultsArray[i] = "muted-gold";
+                secretTrackingArray[targetMatchIndex] = null;
             }
         }
-    });
+    }
 
-    // Capture the submission snapshot guess string context right now before looping clears it out
-    const activeSubmittedGuess = userGuess;
-
-    for (let i = 0; i < WORD_LENGTH; i++) {
-        const tile = document.getElementById(`row-${currentAttempt}-tile-${i}`);
-        
+    // Apply colored identity transformations across cells
+    tiles.forEach((tile, idx) => {
         setTimeout(() => {
-            tile.classList.add("flip");
-            
-            setTimeout(() => {
-                tile.classList.remove("flip");
-                tile.style.background = tileColors[i];
-                tile.style.borderColor = tileColors[i];
-                tile.classList.add("reveal");
-                
-                const letter = activeSubmittedGuess[i];
-                const keyElement = document.getElementById(`key-${letter}`);
-                if (keyElement && keyUpdates[letter]) {
-                    keyElement.style.background = keyUpdates[letter];
-                    keyElement.style.borderColor = keyUpdates[letter];
-                    keyElement.style.color = "#fff";
-                }
-            }, 250);
-        }, i * 150); 
+            tile.style.transition = "background-color 0.4s ease, border-color 0.4s ease";
+            if (statusLogResultsArray[idx] === "sage-green") {
+                tile.style.backgroundColor = "#7d8f7a";
+                tile.style.borderColor = "#7d8f7a";
+            } else if (statusLogResultsArray[idx] === "muted-gold") {
+                tile.style.backgroundColor = "#bfa36f";
+                tile.style.borderColor = "#bfa36f";
+            } else {
+                tile.style.backgroundColor = "#222";
+                tile.style.borderColor = "rgba(255,255,255,0.05)";
+            }
+        }, idx * 100);
+    });
+
+    if (currentGuessStringPayload === TARGET_SECRET_WORD) {
+        systemGameLockedStateFlag = true;
+        document.getElementById("gamePromptLabel").innerText = "✨ Access Granted. The inner vault chambers dissolve open.";
+        displayMinimalistToast("🎉 Crypt Deciphered Successfully!");
+        updatePulsingCursorTrack();
+        return;
     }
 
-    const totalAnimationTime = (WORD_LENGTH * 150) + 250;
-    setTimeout(() => {
-        if (activeSubmittedGuess === SECRET_WORD) {
-            showCryptToast("🌒 Crypt Deciphered Successfully. Your soul aligns with the verse.", 4500);
-            isGameOver = true;
-            document.getElementById("hint-btn").disabled = true;
+    currentActiveAttemptRow++;
+    currentTileCharacterIndex = 0;
+    currentGuessStringPayload = "";
 
-            // DYNAMIC AUTOMATIC RESET LOOP (5 SECONDS BUFFER)
-            setTimeout(() => {
-                showCryptToast("🔄 The layout resets... rolling a new verse fragment.", 3000);
-                resetCryptGame();
-            }, 5000);
-            return;
-        }
-
-        currentAttempt++;
-        userGuess = "";
-        
-        if (window.innerWidth <= 480) {
-            document.getElementById("mobile-keyboard-trigger").value = "";
-        }
-
-        if (currentAttempt >= MAX_ATTEMPTS) {
-            showCryptToast(`🔒 The lock mechanism froze. The secret keyword was: **${SECRET_WORD}**`, 4500);
-            isGameOver = true;
-            document.getElementById("hint-btn").disabled = true;
-
-            // DYNAMIC AUTOMATIC RESET LOOP (5 SECONDS BUFFER)
-            setTimeout(() => {
-                showCryptToast("🔄 The vault cycles... a new keyword emerges.", 3000);
-                resetCryptGame();
-            }, 5000);
-        }
-    }, totalAnimationTime);
-}
-
-// COMPREHENSIVE AUTOMATIC GAME RESET MATRIX
-function resetCryptGame() {
-    // 1. Roll a completely new secret keyword out of your words.js list
-    const answersPool = Object.keys(CRYPT_DICTIONARY);
-    SECRET_WORD = answersPool[Math.floor(Math.random() * answersPool.length)];
+    if (currentActiveAttemptRow >= 6) {
+        systemGameLockedStateFlag = true;
+        document.getElementById("gamePromptLabel").innerText = `❌ Vault Sealed. The correct token phrase was ${TARGET_SECRET_WORD}.`;
+        displayMinimalistToast("⚠️ Crypt lockdown sequence engaged.");
+    }
     
-    // 2. Clear core logical state parameters
-    currentAttempt = 0;
-    userGuess = "";
-    isGameOver = false;
-    hintsUsed = 0;
-
-    // 3. Clear the main board layout grid tiles completely
-    initializeGrid();
-
-    // 4. Reset virtual keyboard keycap structural backdrops to original states
-    initializeKeyboard();
-
-    // 5. Reset the Hint Display Controller text box & interactive button setup
-    const hintBtn = document.getElementById("hint-btn");
-    const hintBox = document.getElementById("hint-display-box");
-    const hintText = document.getElementById("hint-text");
-
-    if (hintBtn && hintBox && hintText) {
-        hintBtn.innerText = "Unlock Hint (3 Left)";
-        hintBtn.disabled = false;
-        hintBox.classList.remove("active");
-        hintText.innerText = "The crypt box hums silently... seek clues below if you lose your way.";
-        hintText.classList.remove("reveal-mode");
-    }
-
-    // 6. Clear device buffer captures if running phone view layouts
-    if (window.innerWidth <= 480) {
-        const mobileTrigger = document.getElementById("mobile-keyboard-trigger");
-        if (mobileTrigger) {
-            mobileTrigger.value = "";
-            mobileTrigger.focus(); // Returns mobile soft focus smoothly back to layout
-        }
-    }
+    updatePulsingCursorTrack();
 }
+
+// Bind Hardware Input Listeners
+document.addEventListener("keydown", (e) => {
+    if (systemGameLockedStateFlag) return;
+    if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+
+    if (e.key === "Enter") {
+        validateSubmissionPackage();
+    } else if (e.key === "Backspace" || e.key === "Delete") {
+        executeDeleteSequence();
+    } else if (/^[a-zA-Z]$/.test(e.key)) {
+        processCharacterInput(e.key.toUpperCase());
+    }
+});
+
+// Bind On-Screen Virtual Click Interaction Keypads
+document.addEventListener("DOMContentLoaded", async () => {
+    initializeCryptMatrixFrame();
+    await fetchMasterEnglishDictionary(); // Launch global vocabulary cache instantly
+
+    document.querySelectorAll(".kb-key").forEach(button => {
+        button.addEventListener("click", (e) => {
+            e.preventDefault();
+            const actionKey = button.getAttribute("data-key");
+
+            if (actionKey === "ENTER") {
+                validateSubmissionPackage();
+            } else if (actionKey === "DELETE") {
+                executeDeleteSequence();
+            } else if (actionKey) {
+                processCharacterInput(actionKey.toUpperCase());
+            }
+        });
+    });
+});

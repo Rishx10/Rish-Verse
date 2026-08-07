@@ -12,7 +12,6 @@ window.addEventListener("pageshow", (event) => {
             loaderLayer.style.visibility = "hidden";
         }
         
-        // Re-calculate visible scroll items to prevent stuck layouts
         revealOnScroll();
     }
 });
@@ -64,7 +63,6 @@ function revealOnScroll() {
 
 if (revealElements.length > 0) {
     window.addEventListener("scroll", revealOnScroll);
-    // Execute immediately on payload paint to verify initial above-fold elements
     setTimeout(revealOnScroll, 100);
 }
 
@@ -80,13 +78,12 @@ let currentDisplayedCount = initialVisibleCount;
 
 if (galleryCards.length > 0 && loadMoreTrigger) {
     loadMoreTrigger.addEventListener("click", () => {
-        let itemsToReveal = 8; // Load photos smoothly in segments of 8
+        let itemsToReveal = 8;
         let targetMax = Math.min(currentDisplayedCount + itemsToReveal, galleryCards.length);
         
         for (let i = currentDisplayedCount; i < targetMax; i++) {
             const card = galleryCards[i];
             card.style.display = "block";
-            // Staggered timing delay so photo nodes fade up in sequence
             setTimeout(() => {
                 card.style.opacity = "1";
                 card.classList.remove("initial-hidden");
@@ -95,7 +92,6 @@ if (galleryCards.length > 0 && loadMoreTrigger) {
         
         currentDisplayedCount = targetMax;
         
-        // Wipe away the button wrapper frame if all visual inventory items are rendered
         if (currentDisplayedCount >= galleryCards.length && loadMoreWrapper) {
             loadMoreWrapper.style.display = "none";
         }
@@ -120,33 +116,26 @@ function updateLightboxViewport(index) {
     
     activeLightboxImageIndex = index;
     const targetSrc = galleryImages[activeLightboxImageIndex].src;
-    
-    // 1. Populate visual panel frame
     lightboxImageNode.src = targetSrc;
     
-    // 2. Extract specific image token name and completely clean forbidden chars (like dots)
-    const rawFilename = targetSrc.split("/").pop(); // Yields "i1.jpg"
-    const parsedFilename = rawFilename.replace(/\./g, ""); // Converts into "i1jpg"
+    const rawFilename = targetSrc.split("/").pop(); 
+    const parsedFilename = rawFilename.replace(/\./g, ""); 
     
-    // Generate immutable alphanumeric path index reference key for Cloud Firestore paths safely
     const databaseTargetToken = "image-" + parsedFilename.replace(/[^a-zA-Z0-9.\-_]/g, "");
     window.currentImageTargetId = databaseTargetToken;
     
-    // 3. Dispatch global system event notify routine so database.js intercepts sync actions instantly
     window.dispatchEvent(new CustomEvent("lightboxOpened"));
 }
 
-// Hook thumbnail click event triggers onto all gallery card objects
 galleryImages.forEach((image, index) => {
     image.parentElement.addEventListener("click", () => {
         if (!lightboxElement) return;
         updateLightboxViewport(index);
         lightboxElement.classList.add("active");
-        document.body.style.overflow = "hidden"; // Halt body window scroll bleed while viewing modal
+        document.body.style.overflow = "hidden";
     });
 });
 
-// Linear Navigation Handlers
 function navigateLightboxForward() {
     if (!lightboxElement || !lightboxElement.classList.contains("active")) return;
     let targetIndex = (activeLightboxImageIndex + 1) % galleryImages.length;
@@ -162,7 +151,6 @@ function navigateLightboxBackward() {
 if (nextBtn) nextBtn.addEventListener("click", navigateLightboxForward);
 if (prevBtn) prevBtn.addEventListener("click", navigateLightboxBackward);
 
-// Track manual layout close callbacks
 function closeFullscreenLightbox() {
     if (!lightboxElement) return;
     lightboxElement.classList.remove("active");
@@ -174,18 +162,14 @@ if (closeLightboxBtn) closeLightboxBtn.addEventListener("click", closeFullscreen
 
 if (lightboxElement) {
     lightboxElement.addEventListener("click", (e) => {
-        // Close overlay safely if user clicks outside boundaries onto dark canvas backdrop margins
         if (e.target === lightboxElement || e.target.id === "lightboxArtPane") {
             closeFullscreenLightbox();
         }
     });
 }
 
-// Map hardware keyboard shortcuts overrides
 document.addEventListener("keydown", (e) => {
     if (!lightboxElement || !lightboxElement.classList.contains("active")) return;
-    
-    // Freeze global key binds if active browser focus context targets a comment form text field
     if (document.activeElement.tagName === "INPUT" || document.activeElement.tagName === "TEXTAREA") return;
 
     if (e.key === "ArrowRight") navigateLightboxForward();

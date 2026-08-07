@@ -3,221 +3,270 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Crypt • Rish Verse</title>
-    <link rel="icon" type="image/png" href="images/favicon.png">
+    <title>The Crypt // Rish Verse</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Inter:wght@200;300;400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* EXTRA EMBEDDED MECHANICS SPECIFIC TO THE CRYPT CORE GRID ONLY */
-        #wordle-grid {
-            display: grid !important;
-            grid-template-rows: repeat(6, 1fr) !important;
-            gap: 12px !important;
-            width: max-content !important;
-        }
-        .grid-row {
-            display: grid !important;
-            grid-template-columns: repeat(5, 1fr) !important;
-            gap: 12px !important;
-            width: max-content !important;
-        }
-        .tile {
-            width: 56px;
-            height: 56px;
-            border: 1px solid rgba(255, 255, 255, 0.08) !important;
-            background: rgba(255, 255, 255, 0.01) !important;
-            border-radius: 0px !important; /* Sharp, modern layout edge */
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 500;
-            text-transform: uppercase;
-            color: #ffffff !important;
-            user-select: none;
-            perspective: 1000px;
-            box-sizing: border-box;
-            transition: transform 0.1s ease, border-color 0.1s ease;
-        }
-        .tile.pop {
-            transform: scale(1.05);
-            border-color: rgba(255, 255, 255, 0.3) !important;
-        }
-        .tile.flip { transform: rotateX(90deg); transition: transform 0.22s ease-in; }
-        .tile.reveal { transform: rotateX(0deg); transition: transform 0.22s ease-out; }
-
-        /* KEYBOARD CONTAINER INJECTION */
-        #keyboard-container {
-            width: 100% !important;
-            max-width: 480px !important;
-            display: flex !important;
-            flex-direction: column !important;
-            gap: 8px !important;
-        }
-        .keyboard-row {
-            display: flex !important;
-            justify-content: center !important;
-            gap: 6px !important;
-            width: 100% !important;
-        }
-        .key {
-            background: rgba(255, 255, 255, 0.03) !important;
-            border: 1px solid rgba(255, 255, 255, 0.04) !important;
-            color: rgba(255, 255, 255, 0.8) !important;
-            padding: 14px 4px;
-            border-radius: 0px !important;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-family: 'Inter', sans-serif;
-            font-weight: 400;
-            flex: 1;
-            text-transform: uppercase;
-            transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
-        }
-        .key.large { flex: 1.8; font-size: 0.7rem; letter-spacing: 0.5px; }
-        .key:hover { background: #ffffff !important; color: #030303 !important; border-color: #ffffff !important; }
-
-        /* THE RULES DIALOG OVERLAY SYSTEM */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(3, 3, 3, 0.96);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            z-index: 10000;
+        /* ==========================================================================
+           SYSTEM-WIDE CRYPT OVERHAUL STYLING
+           ========================================================================== */
+        .crypt-container {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s ease;
-        }
-        .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-card {
-            background: #060606;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            padding: 40px;
-            width: 90%;
-            max-width: 480px;
-            transform: scale(0.97);
-            transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        }
-        .modal-overlay.active .modal-card { transform: scale(1); }
-        .modal-header {
-            display: flex;
+            flex-direction: row;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
-            padding-bottom: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            gap: 40px;
+            min-height: calc(100vh - 150px);
         }
-        .modal-header h2 { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 400; margin: 0; }
-        .close-modal { background: none; border: none; color: rgba(255,255,255,0.3); font-size: 1.8rem; cursor: pointer; transition: color 0.2s; }
-        .close-modal:hover { color: #fff; }
-        .rules-content p { font-size: 0.9rem; line-height: 1.7; color: #8c8c8c; margin-bottom: 20px; font-weight: 200; }
+
+        .matrix-box {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .crypt-grid {
+            display: grid;
+            grid-template-rows: repeat(6, 1fr);
+            gap: 8px;
+        }
+
+        .crypt-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        /* Error Feedback Shake Animation */
+        .crypt-row.shake {
+            animation: shakeRow 0.4s ease-in-out;
+        }
+
+        .crypt-tile {
+            width: 60px;
+            height: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.02);
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 300;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-transform: uppercase;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        /* Sleek Pulsing Input Cursor */
+        .crypt-tile.active-cursor {
+            border-bottom: 3px solid #7d8f7a !important;
+            animation: pulseCursor 1.2s infinite ease-in-out;
+        }
+
+        .interaction-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            max-width: 480px;
+        }
+
+        .virtual-keyboard {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .kb-row {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+        }
+
+        .kb-key {
+            flex: 1;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: #fff;
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: background 0.2s ease;
+            border-radius: 4px;
+        }
+
+        .kb-key:active {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .kb-key.wide {
+            flex: 1.5;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* ==========================================================================
+           RESPONSIVE MOBILE SCALING MEDIA ENGINE
+           ========================================================================== */
+        @media (max-width: 900px) {
+            .crypt-container {
+                flex-direction: column;
+                padding: 20px 10px;
+                gap: 30px;
+                justify-content: center;
+            }
+            
+            .interaction-panel {
+                max-width: 100%;
+                width: 100%;
+            }
+
+            .crypt-tile {
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
+            }
+
+            .kb-key {
+                height: 45px;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .crypt-container {
+                padding: 10px 5px;
+                gap: 20px;
+            }
+
+            .crypt-tile {
+                width: 44px;
+                height: 44px;
+                font-size: 1.1rem;
+            }
+
+            .kb-row {
+                gap: 4px;
+            }
+
+            .kb-key {
+                height: 40px;
+                font-size: 0.75rem;
+            }
+
+            .kb-key.wide {
+                font-size: 0.65rem;
+            }
+        }
+
+        /* ==========================================================================
+           ANIMATIONS KEYFRAMES
+           ========================================================================== */
+        @keyframes pulseCursor {
+            0%, 100% { border-bottom-color: rgba(125, 143, 122, 0.2); }
+            50% { border-bottom-color: rgba(125, 143, 122, 1); }
+        }
+
+        @keyframes shakeRow {
+            0%, 100% { transform: translateX(0); }
+            15%, 45%, 75% { transform: translateX(-6px); }
+            30%, 60%, 90% { transform: translateX(6px); }
+        }
     </style>
 </head>
-<body>
-    
-    <div id="toast-container"></div>
-    <div class="progress-bar"></div>
+<body class="crypt-page">
     <div class="page-transition"></div>
-
-    <input type="text" id="mobile-keyboard-trigger" autocomplete="off" autocapitalize="none" inputmode="text">
-
-    <div class="modal-overlay" id="rules-modal">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h2>Crypt Decryption Rules</h2>
-                <button class="close-modal" id="close-rules">&times;</button>
+    
+    <div style="display: flex; min-height: 100vh;">
+        <aside style="width: 280px; padding: 40px; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid rgba(255,255,255,0.05);" class="sidebar-nav-frame">
+            <div>
+                <div class="logo-frame" style="margin-bottom: 40px;">
+                    <span style="font-size: 1.8rem; font-weight: 300; letter-spacing: 2px; color: #fff;">Rish Verse</span>
+                </div>
+                <nav style="display: flex; flex-direction: column; gap: 20px;">
+                    <a href="index.html" style="color: rgba(255,255,255,0.4); text-decoration: none;">01 Home</a>
+                    <a href="gallery.html" style="color: rgba(255,255,255,0.4); text-decoration: none;">02 Gallery</a>
+                    <a href="poems.html" style="color: rgba(255,255,255,0.4); text-decoration: none;">03 Poems</a>
+                    <a href="thecrypt.html" style="color: #fff; text-decoration: none; font-weight: 400;">04 The Crypt</a>
+                </nav>
             </div>
-            <div class="rules-content">
-                <p>Decipher the hidden 5-letter poetry fragment in 6 attempts. Every alignment guess entry must correspond to a verified 5-letter term.</p>
-                <p>Upon validation submission, the structural tiles will pivot color frequencies to map your distance from the solution:</p>
+            <footer style="font-size: 0.8rem; color: rgba(255,255,255,0.2);">&copy; 2026 Archive</footer>
+        </aside>
+
+        <main style="flex: 1; background: #0a0a0a;">
+            <div class="crypt-container">
                 
-                <div class="example-container">
-                    <div class="example-title">Visual Clue Matrix</div>
-                    <div class="ex-row" style="display:flex; align-items:center; gap:15px; margin-bottom:12px;">
-                        <div class="ex-tile" style="width:32px; height:32px; background:#7d8f7a; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:0.9rem;">W</div>
-                        <span class="ex-txt" style="font-size:0.85rem; color:#8c8c8c;"><strong style="color:white;">Sage Green:</strong> Correct alignment. Key matches its index.</span>
+                <div class="matrix-box">
+                    <div class="crypt-grid" id="cryptGrid">
+                        </div>
+                </div>
+
+                <div class="interaction-panel">
+                    <div>
+                        <span style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: #7d8f7a;">— MODULE / LOGIC ENGINE</span>
+                        <h1 style="font-size: 3rem; font-weight: 300; margin: 10px 0; color: #fff;">The Crypt</h1>
+                        <p style="color: rgba(255,255,255,0.4); margin: 0;">Decipher the fading poetry fragments.</p>
                     </div>
-                    <div class="ex-row" style="display:flex; align-items:center; gap:15px; margin-bottom:12px;">
-                        <div class="ex-tile" style="width:32px; height:32px; background:#ad9363; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:0.9rem;">O</div>
-                        <span class="ex-txt" style="font-size:0.85rem; color:#8c8c8c;"><strong style="color:white;">Muted Gold:</strong> Misplaced trace. Present in term, different area.</span>
+
+                    <div style="font-style: italic; font-size: 0.9rem; color: rgba(255,255,255,0.3); padding: 15px; background: rgba(255,255,255,0.01); border-left: 2px solid #7d8f7a;" id="gamePromptLabel">
+                        The vault parameters hum quietly... type your initial guess.
                     </div>
-                    <div class="ex-row" style="display:flex; align-items:center; gap:15px; margin-bottom:12px;">
-                        <div class="ex-tile" style="width:32px; height:32px; background:#252525; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:0.9rem;">R</div>
-                        <span class="ex-txt" style="font-size:0.85rem; color:#8c8c8c;"><strong style="color:white;">Charcoal:</strong> Missing component. Excluded entirely from target.</span>
+
+                    <div class="virtual-keyboard">
+                        <div class="kb-row">
+                            <button class="kb-key" data-key="Q">q</button>
+                            <button class="kb-key" data-key="W">w</button>
+                            <button class="kb-key" data-key="E">e</button>
+                            <button class="kb-key" data-key="R">r</button>
+                            <button class="kb-key" data-key="T">t</button>
+                            <button class="kb-key" data-key="Y">y</button>
+                            <button class="kb-key" data-key="U">u</button>
+                            <button class="kb-key" data-key="I">i</button>
+                            <button class="kb-key" data-key="O">o</button>
+                            <button class="kb-key" data-key="P">p</button>
+                        </div>
+                        <div class="kb-row">
+                            <button class="kb-key" data-key="A">a</button>
+                            <button class="kb-key" data-key="S">s</button>
+                            <button class="kb-key" data-key="D">d</button>
+                            <button class="kb-key" data-key="F">f</button>
+                            <button class="kb-key" data-key="G">g</button>
+                            <button class="kb-key" data-key="H">h</button>
+                            <button class="kb-key" data-key="J">j</button>
+                            <button class="kb-key" data-key="K">k</button>
+                            <button class="kb-key" data-key="L">l</button>
+                        </div>
+                        <div class="kb-row">
+                            <button class="kb-key wide" data-key="ENTER">ENTER</button>
+                            <button class="kb-key" data-key="Z">z</button>
+                            <button class="kb-key" data-key="X">x</button>
+                            <button class="kb-key" data-key="C">c</button>
+                            <button class="kb-key" data-key="V">v</button>
+                            <button class="kb-key" data-key="B">b</button>
+                            <button class="kb-key" data-key="N">n</button>
+                            <button class="kb-key" data-key="M">m</button>
+                            <button class="kb-key wide" data-key="DELETE">DELETE</button>
+                        </div>
                     </div>
                 </div>
+
             </div>
-        </div>
+        </main>
     </div>
 
-    <aside class="side-panel">
-        <div class="panel-header">
-            <a href="index.html" class="brand-link">
-                <img src="images/logo.png" class="nav-logo" alt="Rish Verse Logo">
-                <h1>Rish Verse</h1>
-            </a>
-            <p class="tagline">Bring Creativity to life</p>
-        </div>
+    <div id="toast-container"></div>
 
-        <nav class="vertical-nav">
-            <ul class="nav-links">
-                <li><a href="index.html" data-num="01">Home</a></li>
-                <li><a href="gallery.html" data-num="02">Gallery</a></li>
-                <li><a href="poems.html" data-num="03">Poems</a></li>
-                <li><a href="thecrypt.html" class="active" data-num="04">The Crypt</a></li>
-            </ul>
-        </nav>
-
-        <div class="panel-footer">
-            <p>© 2026 Archive</p>
-        </div>
-    </aside>
-
-    <main class="main-content">
-        
-        <div class="game-wrapper" style="padding: 100px 10% 60px; min-height:100vh; display:flex; flex-direction:column; justify-content:space-between;">
-            
-            <header class="game-header-area" style="margin-bottom: 50px; position:relative;">
-                <p class="section-meta">Module / Logic Engine</p>
-                <h1 class="game-title" style="font-family: var(--font-serif); font-size: 3.8rem; font-weight: 300; color: white; margin: 10px 0 15px;">The Crypt</h1>
-                <p class="game-subtitle" style="color: var(--text-muted); font-size: 1rem; font-weight: 200;">Decipher the fading poetry fragments.</p>
-                <button class="help-btn" id="open-rules" title="How to Play" style="position:absolute; right:0; top:10px; background:transparent; border:1px solid rgba(255,255,255,0.1); color:white; width:36px; height:36px; cursor:pointer;">?</button>
-            </header>
-
-            <div class="game-container-split" style="display:flex; gap:60px; align-items:flex-start; width:100%;">
-                
-                <div class="split-left-grid" style="flex:1; display:flex; justify-content:center;">
-                    <div id="wordle-grid"></div>
-                </div>
-                
-                <div class="split-right-dashboard" style="flex:1.1; display:flex; flex-direction:column; gap:25px;">
-                    
-                    <div id="hint-display-box" style="padding: 20px 0; border-bottom:1px solid rgba(255,255,255,0.03); width:100%;">
-                        <p id="hint-text" style="font-size:0.95rem; color:var(--text-muted); font-style:italic; line-height:1.6; font-weight:200;">The vault parameters hum quietly... click trigger below if you lose your way.</p>
-                    </div>
-                    
-                    <button class="hint-trigger-btn" id="hint-btn" style="align-self:flex-start; background:transparent; border:1px solid rgba(173, 147, 99, 0.2); color:#ad9363; padding:12px 30px; font-size:0.75rem; text-transform:uppercase; letter-spacing:1.5px; cursor:pointer; transition:all 0.3s ease;">Unlock Hint (3 Left)</button>
-
-                    <div id="keyboard-container"></div>
-                </div>
-
-            </div>
-
-            <footer class="canvas-footer" style="padding: 60px 0 0 0; margin-top:80px; width:100%;">
-                <p>The Crypt Engine • System Secured by Rish</p>
-            </footer>
-
-        </div>
-    </main>
-
-    <script src="words.js"></script>
-    <script src="thecrypt.js"></script>
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
+    <script type="module" src="database.js"></script>
 </body>
 </html>
